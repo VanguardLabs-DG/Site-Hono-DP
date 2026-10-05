@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Distrito Paulista RP — Painel de Gestão Administrativa e Dashboard Staff" />
+  <meta name="theme-color" content="#07080B" />
+  <title>Dashboard Administrativo — Distrito Paulista RP</title>
+
+  <link rel="icon" type="image/png" href="./assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+
+  <script type="module" src="./js/dashboard.js"></script>
+</head>
+<body class="dashboard-page-body" x-data="dashboardApp">
+  <!-- Topbar Principal do Dashboard -->
+  <header class="dashboard-global-header">
+    <div class="dash-header-left">
+      <a href="./index.html" class="dash-back-btn" title="Voltar ao portal oficial">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <span>Voltar ao Site</span>
+      </a>
+      <div class="dash-brand-sep"></div>
+      <img src="./assets/logo.png" alt="Distrito Paulista" class="dash-top-logo" />
+      <span class="badge-tag gold">CLOUDFLARE EDGE SAAS</span>
+    </div>
+
+    <!-- Seletor Rápido de Cargo (Modo Demonstração) -->
+    <div class="demo-role-switcher-header">
+      <span class="muted-text text-sm">Trocar Perfil:</span>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'ceo' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('ceo')">👑 CEO</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'diretor' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('diretor')">⚜️ Diretor</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'gerente' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('gerente')">💼 Gerente</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'administrador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('administrador')">⚖️ Admin</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'moderador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('moderador')">🛡️ Moderador</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'suporte' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('suporte')">🎧 Suporte</button>
+    </div>
+
+    <div class="dash-header-right">
+      <div class="dash-user-pill">
+        <div class="dash-user-avatar" x-text="currentUser?.avatarUrl || '👑'"></div>
+        <div class="dash-user-text">
+          <strong x-text="currentUser?.displayName || 'Carregando...'"></strong>
+          <span class="user-role-badge ceo-badge uppercase" x-text="currentUser?.role"></span>
+        </div>
+      </div>
+      <button class="btn btn-secondary-danger btn-sm" @click="handleLogout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-main-wrapper">
+    <!-- Sidebar de Navegação do Dashboard -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-menu-group">
+        <span class="sidebar-group-title">PAINEL PRINCIPAL</span>
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'overview' }" @click="activeTab = 'overview'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Visão Geral</span>
+        </button>
+
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'applications' }" @click="activeTab = 'applications'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <span>Candidaturas Staff</span>
+          <span class="counter-badge" x-text="stats.pendingApps">0</span>
+        </button>
+      </div>
+
+      <div class="sidebar-menu-group">
+        <span class="sidebar-group-title">CONTEÚDO & PUBLICAÇÃO</span>
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'contentEditor' }" @click="activeTab = 'contentEditor'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <span>Editor de Conteúdo</span>
+        </button>
+      </div>
+
+      <div class="sidebar-menu-group">
+        <span class="sidebar-group-title">DIREÇÃO & HIERARQUIA</span>
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'team' }" @click="activeTab = 'team'" x-show="can('can_manage_staff')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Equipe & Logins</span>
+        </button>
+
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'permissions' }" @click="activeTab = 'permissions'" x-show="currentUser?.role === 'ceo'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Permissões (CEO)</span>
+        </button>
+
+        <button class="dash-side-link" :class="{ 'active': activeTab === 'audit' }" @click="activeTab = 'audit'" x-show="can('can_view_audit_logs')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Trilha de Auditoria</span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer-box">
+        <span class="system-status-indicator">
+          <span class="status-indicator online pulse"></span>
+          <span>Cloudflare Edge D1 Ativo</span>
+        </span>
+      </div>
+    </aside>
+
+    <!-- Área de Conteúdo Dinâmico do Dashboard -->
+    <main class="dashboard-content-area">
+      <!-- ABA 1: VISÃO GERAL -->
+      <section class="dash-pane active" :class="{ 'active': activeTab === 'overview' }" x-show="activeTab === 'overview'">
+        <div class="pane-title-row">
+          <div>
+            <h2>Visão Geral do Distrito Paulista</h2>
+            <p class="muted-text">Métricas em tempo real, status das candidaturas e integridade do ecossistema.</p>
+          </div>
+          <button class="btn btn-gold" @click="activeTab = 'contentEditor'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            <span>Editar Conteúdo do Site</span>
+          </button>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card gold-border">
+            <div class="metric-icon">📥</div>
+            <div class="metric-data">
+              <span class="metric-label">Total de Candidaturas</span>
+              <strong class="metric-value" x-text="stats.totalApps">0</strong>
+            </div>
+          </div>
+          <div class="metric-card warning-border">
+            <div class="metric-icon">⏳</div>
+            <div class="metric-data">
+              <span class="metric-label">Aguardando Avaliação</span>
+              <strong class="metric-value text-warning" x-text="stats.pendingApps">0</strong>
+            </div>
+          </div>
+          <div class="metric-card success-border">
+            <div class="metric-icon">✅</div>
+            <div class="metric-data">
+              <span class="metric-label">Aprovados para Entrevista</span>
+              <strong class="metric-value text-success" x-text="stats.approvedApps">0</strong>
+            </div>
+          </div>
+          <div class="metric-card danger-border">
+            <div class="metric-icon">👥</div>
+            <div class="metric-data">
+              <span class="metric-label">Membros na Equipe</span>
+              <strong class="metric-value text-danger" x-text="stats.staffCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-split-grid">
+          <div class="card glass-card">
+            <div class="card-header-styled">
+              <h4>⚡ Ações Rápidas de Gestão</h4>
+            </div>
+            <div class="quick-action-buttons">
+              <button class="btn btn-glass" @click="activeTab = 'applications'">
+                <span>📋 Avaliar Novas Candidaturas</span>
+              </button>
+              <button class="btn btn-glass" @click="activeTab = 'contentEditor'">
+                <span>📜 Atualizar Código Penal ou Regras</span>
+              </button>
+              <button class="btn btn-gold" @click="isCreateUserModalOpen = true" x-show="can('can_manage_staff')">
+                <span>➕ Criar Novo Login de Staff</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card glass-card">
+            <div class="card-header-styled">
+              <h4>🛡️ Privilégios do Cargo Atual</h4>
+            </div>
+            <div class="user-rights-summary">
+              <p><strong>Cargo Atual:</strong> <span class="capitalize" x-text="currentUser?.role"></span></p>
+              <p class="muted-text margin-top-4">
+                <template x-if="currentUser?.role === 'ceo'">
+                  <span>Controle total e irrestrito de todo o servidor, matriz de permissões e contas.</span>
+                </template>
+                <template x-if="currentUser?.role !== 'ceo'">
+                  <span>Suas ações são limitadas pela matriz de permissões configurada pelo CEO.</span>
+                </template>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 2: CANDIDATURAS -->
+      <section class="dash-pane" :class="{ 'active': activeTab === 'applications' }" x-show="activeTab === 'applications'" x-cloak>
+        <div class="card glass-card">
+          <div class="pane-header-flex">
+            <div>
+              <h3>Gestão de Candidaturas de Staff</h3>
+              <p class="muted-text">Visualize as respostas detalhadas dos candidatos, perguntas situacionais e defina o parecer da comissão.</p>
+            </div>
+            <div class="filters-flex">
+              <select class="select-inline" x-model="appsFilter">
+                <option value="all">Todas as Inscrições</option>
+                <option value="pending">Apenas Pendentes</option>
+                <option value="reviewing">Em Análise</option>
+                <option value="approved">Aprovadas</option>
+                <option value="rejected">Recusadas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="applications-container margin-top-16">
+            <template x-if="filteredApplications.length === 0">
+              <p class="muted-text text-center padding-24">Nenhuma candidatura encontrada com o filtro selecionado.</p>
+            </template>
+
+            <template x-for="app in filteredApplications" :key="app.id">
+              <div class="application-item-card card glass-card margin-bottom-12 padding-16 flex-between-center">
+                <div>
+                  <div class="flex-align-center gap-8">
+                    <strong class="font-lg" x-text="app.gameName"></strong>
+                    <span class="badge" :class="getStatusBadge(app.status).class" x-text="getStatusBadge(app.status).label"></span>
+                    <span class="badge secondary capitalize" x-text="app.desiredRole"></span>
+                  </div>
+                  <p class="muted-text text-sm margin-top-4">
+                    Discord: <span class="font-bold text-light" x-text="app.discordTag"></span> •
+                    Idade: <span x-text="app.age"></span> anos •
+                    Enviado em: <span x-text="new Date(app.createdAt).toLocaleString('pt-BR')"></span>
+                  </p>
+                </div>
+                <div class="flex-align-center gap-8">
+                  <button class="btn btn-sm btn-gold" @click="openAppModal(app)">
+                    <span>Avaliar Inscrição</span>
+                  </button>
+                  <button class="btn btn-sm btn-secondary-danger" @click="deleteApplication(app.id)" x-show="can('can_delete_applications')">
+                    <span>Excluir</span>
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 3: EDITOR DE CONTEÚDO -->
+      <section class="dash-pane" :class="{ 'active': activeTab === 'contentEditor' }" x-show="activeTab === 'contentEditor'" x-cloak>
+        <div class="card glass-card">
+          <div class="pane-header-flex">
+            <div>
+              <h3>Editor Central de Conteúdo Publicado</h3>
+              <p class="muted-text">Edite as Regras Gerais, Diretrizes da Polícia, Ilegal, Código Penal e a História Oficial do Distrito Paulista.</p>
+            </div>
+            <div class="select-wrapper">
+              <select class="select-styled" x-model="selectedRuleCategory" @change="selectRuleCategory(selectedRuleCategory)">
+                <option value="gerais">⚖️ Regras Gerais da Cidade</option>
+                <option value="policia">🚓 Regras da Polícia & Forças da Lei</option>
+                <option value="ilegal">💀 Regras do Ilegal & Facções</option>
+                <option value="codigo_penal">📜 Código Penal Oficial de SP</option>
+                <option value="historia">🌆 História & Lore da Cidade</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rule-edit-form margin-top-20">
+            <div class="form-group">
+              <label>Título Oficial da Seção / Artigo</label>
+              <input type="text" x-model="ruleEditTitle" maxlength="140" class="input-styled" />
+            </div>
+
+            <div class="form-group">
+              <label>Conteúdo Publicado (Uma regra/parágrafo por linha)</label>
+              <textarea rows="16" x-model="ruleEditContent" class="textarea-styled font-mono"></textarea>
+              <small class="help-text">Cada linha é formatada automaticamente no site oficial. Pressione Enter para adicionar uma nova linha.</small>
+            </div>
+
+            <div class="form-footer-flex">
+              <button class="btn btn-gold btn-lg" @click="saveCurrentRule()" :disabled="ruleSaving">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span x-text="ruleSaving ? 'Salvando no Edge...' : 'Salvar & Publicar no Site'"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 4: EQUIPE & LOGINS -->
+      <section class="dash-pane" :class="{ 'active': activeTab === 'team' }" x-show="activeTab === 'team'" x-cloak>
+        <div class="card glass-card">
+          <div class="pane-header-flex">
+            <div>
+              <h3>Gestão de Membros da Staff & Logins</h3>
+              <p class="muted-text">Cadastre novos acessos para moderadores, administradores e gerencie a hierarquia de cargos.</p>
+            </div>
+            <button class="btn btn-gold" @click="isCreateUserModalOpen = true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              <span>+ Criar Novo Login Staff</span>
+            </button>
+          </div>
+
+          <div class="table-responsive margin-top-16">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Membro / Usuário</th>
+                  <th>E-mail de Login</th>
+                  <th>Cargo Hierárquico</th>
+                  <th>Status</th>
+                  <th>Data de Entrada</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="user in teamList" :key="user.id">
+                  <tr>
+                    <td>
+                      <span x-text="user.avatarUrl || '👤'"></span>
+                      <strong x-text="user.displayName"></strong>
+                    </td>
+                    <td x-text="user.email"></td>
+                    <td>
+                      <select class="select-sm" :value="user.role" @change="changeUserRole(user.id, $event.target.value)" :disabled="currentUser?.role !== 'ceo' && user.role === 'ceo'">
+                        <option value="suporte">Suporte</option>
+                        <option value="moderador">Moderador</option>
+                        <option value="administrador">Administrador</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="diretor">Diretor</option>
+                        <option value="ceo">CEO (Master)</option>
+                      </select>
+                    </td>
+                    <td>
+                      <span class="badge" :class="user.status === 'active' ? 'status-approved' : 'status-rejected'" x-text="user.status === 'active' ? 'Ativo' : 'Suspenso'"></span>
+                    </td>
+                    <td x-text="new Date(user.createdAt).toLocaleDateString('pt-BR')"></td>
+                    <td>
+                      <div class="flex-align-center gap-8">
+                        <button class="btn btn-xs btn-secondary" @click="toggleUserStatus(user)">
+                          <span x-text="user.status === 'active' ? 'Suspender' : 'Ativar'"></span>
+                        </button>
+                        <button class="btn btn-xs btn-secondary-danger" @click="deleteUser(user.id)" x-show="currentUser?.role === 'ceo' && user.id !== (currentUser?.id || currentUser?.userId)">
+                          <span>Excluir</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 5: MATRIZ DE PERMISSÕES RBAC (EXCLUSIVO CEO) -->
+      <section class="dash-pane" :class="{ 'active': activeTab === 'permissions' }" x-show="activeTab === 'permissions'" x-cloak>
+        <div class="card glass-card">
+          <div class="pane-header-flex">
+            <div>
+              <div class="flex-align-center gap-8">
+                <span class="role-pill ceo">👑 EXCLUSIVO DO CEO MASTER</span>
+              </div>
+              <h3 class="margin-top-8">Matriz de Permissões de Cargos (RBAC)</h3>
+              <p class="muted-text">Defina com precisão quais privilégios cada nível hierárquico possui na gestão do Distrito Paulista.</p>
+            </div>
+          </div>
+
+          <div class="permissions-matrix-wrapper margin-top-16">
+            <table class="styled-table matrix-table">
+              <thead>
+                <tr>
+                  <th>Funcionalidade / Ação</th>
+                  <th class="text-center">Suporte 🎧</th>
+                  <th class="text-center">Moderador 🛡️</th>
+                  <th class="text-center">Administrador ⚖️</th>
+                  <th class="text-center">Gerente 💼</th>
+                  <th class="text-center">Diretor ⚜️</th>
+                  <th class="text-center">CEO 👑</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="perm in permissionsMatrix" :key="perm.permissionKey">
+                  <tr>
+                    <td>
+                      <strong x-text="perm.label"></strong>
+                      <br><small class="muted-text font-mono" x-text="perm.permissionKey"></small>
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" :checked="perm.suporte" @change="togglePermission(perm, 'suporte')" />
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" :checked="perm.moderador" @change="togglePermission(perm, 'moderador')" />
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" :checked="perm.administrador" @change="togglePermission(perm, 'administrador')" />
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" :checked="perm.gerente" @change="togglePermission(perm, 'gerente')" />
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" :checked="perm.diretor" @change="togglePermission(perm, 'diretor')" />
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" checked disabled />
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 6: LOGS DE AUDITORIA -->
+      <section class="dash-pane" :class="{ 'active': activeTab === 'audit' }" x-show="activeTab === 'audit'" x-cloak>
+        <div class="card glass-card">
+          <div class="pane-header-flex">
+            <div>
+              <h3>Trilha de Auditoria do Sistema</h3>
+              <p class="muted-text">Registro cronológico de todas as modificações, avaliações de candidaturas e acessos administrativos.</p>
+            </div>
+            <button class="btn btn-secondary" @click="clearAuditLogs()" x-show="currentUser?.role === 'ceo'">
+              <span>Limpar Histórico Antigo</span>
+            </button>
+          </div>
+
+          <div class="audit-logs-list margin-top-16">
+            <template x-if="auditLogsList.length === 0">
+              <p class="muted-text text-center padding-24">Nenhum registro de auditoria no histórico.</p>
+            </template>
+
+            <template x-for="log in auditLogsList" :key="log.id">
+              <div class="audit-log-item padding-12 margin-bottom-8 card glass-card">
+                <div class="flex-between-center">
+                  <div>
+                    <span class="badge secondary" x-text="log.action"></span>
+                    <strong class="margin-left-8" x-text="log.userName"></strong>
+                  </div>
+                  <small class="muted-text" x-text="new Date(log.createdAt).toLocaleString('pt-BR')"></small>
+                </div>
+                <p class="text-sm margin-top-4" x-text="log.details"></p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal para Criar Novo Membro da Staff -->
+  <div class="modal-backdrop" x-show="isCreateUserModalOpen" x-cloak role="dialog" aria-modal="true">
+    <div class="modal-box card glass-card">
+      <div class="modal-header">
+        <h3>Criar Nova Conta de Staff</h3>
+        <button class="modal-close-btn" @click="isCreateUserModalOpen = false" aria-label="Fechar modal">✕</button>
+      </div>
+      <form class="modal-form" @submit.prevent="createUser()" novalidate>
+        <div class="form-group">
+          <label>Nome Completo / ID no Jogo *</label>
+          <input type="text" x-model="newUserForm.displayName" placeholder="Ex: Gabriel Souza | ID: 1540" required />
+        </div>
+        <div class="form-group">
+          <label>E-mail Institucional *</label>
+          <input type="email" x-model="newUserForm.email" placeholder="nome@distritopaulista.com" required />
+        </div>
+        <div class="form-group">
+          <label>Senha Provisória *</label>
+          <div class="input-with-button">
+            <input type="text" x-model="newUserForm.password" minlength="8" required />
+            <button type="button" class="btn btn-secondary" @click="generatePassword()">Gerar Senha</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cargo Inicial *</label>
+          <select x-model="newUserForm.role" required>
+            <option value="suporte">🎧 Suporte</option>
+            <option value="moderador">🛡️ Moderador</option>
+            <option value="administrador">⚖️ Administrador</option>
+            <option value="gerente">💼 Gerente</option>
+            <option value="diretor">⚜️ Diretor</option>
+            <option value="ceo" x-show="currentUser?.role === 'ceo'">👑 CEO (Superadmin)</option>
+          </select>
+        </div>
+
+        <template x-if="createUserError">
+          <div class="alert alert-danger margin-bottom-12" x-text="createUserError"></div>
+        </template>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" @click="isCreateUserModalOpen = false">Cancelar</button>
+          <button type="submit" class="btn btn-gold" :disabled="createUserLoading">
+            <span x-text="createUserLoading ? 'Criando no Edge...' : 'Criar Conta Agora'"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para Visualizar Detalhes Completos da Candidatura -->
+  <div class="modal-backdrop" x-show="isViewAppModalOpen" x-cloak role="dialog" aria-modal="true">
+    <div class="modal-box modal-box-large card glass-card" x-show="selectedApp">
+      <div class="modal-header">
+        <div class="flex-align-center gap-12">
+          <h3>Avaliação de Candidatura: <span x-text="selectedApp?.gameName"></span></h3>
+          <span class="badge" :class="selectedApp ? getStatusBadge(selectedApp.status).class : ''" x-text="selectedApp ? getStatusBadge(selectedApp.status).label : ''"></span>
+        </div>
+        <button class="modal-close-btn" @click="closeAppModal()" aria-label="Fechar modal">✕</button>
+      </div>
+
+      <div class="modal-body-scrollable padding-16">
+        <div class="grid-2-col gap-16 margin-bottom-16">
+          <div>
+            <span class="text-sm muted-text">Discord:</span>
+            <p class="font-bold" x-text="selectedApp?.discordTag"></p>
+          </div>
+          <div>
+            <span class="text-sm muted-text">Idade:</span>
+            <p class="font-bold" x-text="`${selectedApp?.age} anos`"></p>
+          </div>
+          <div>
+            <span class="text-sm muted-text">Cargo Pretendido:</span>
+            <p class="font-bold capitalize" x-text="selectedApp?.desiredRole"></p>
+          </div>
+          <div>
+            <span class="text-sm muted-text">Disponibilidade:</span>
+            <p class="font-bold" x-text="selectedApp?.availability"></p>
+          </div>
+        </div>
+
+        <div class="margin-bottom-16">
+          <span class="text-sm muted-text">Experiência Prévia:</span>
+          <p class="card glass-card padding-12 margin-top-4" x-text="selectedApp?.experience"></p>
+        </div>
+
+        <div class="margin-bottom-16">
+          <span class="text-sm muted-text">Cenário 1 (Amigo quebrando regra):</span>
+          <p class="card glass-card padding-12 margin-top-4" x-text="selectedApp?.scenario1"></p>
+        </div>
+
+        <div class="margin-bottom-16">
+          <span class="text-sm muted-text">Cenário 2 (Jogador desrespeitoso):</span>
+          <p class="card glass-card padding-12 margin-top-4" x-text="selectedApp?.scenario2"></p>
+        </div>
+
+        <div class="margin-bottom-16">
+          <span class="text-sm muted-text">Motivação / Por que escolher:</span>
+          <p class="card glass-card padding-12 margin-top-4" x-text="selectedApp?.motivation"></p>
+        </div>
+
+        <hr class="margin-vertical-16" />
+
+        <!-- Parecer do Avaliador -->
+        <div class="margin-bottom-16">
+          <label class="font-bold block margin-bottom-8">Novo Status da Candidatura:</label>
+          <select class="select-styled" x-model="appEditStatus">
+            <option value="pending">⏳ Pendente</option>
+            <option value="reviewing">🔍 Em Análise</option>
+            <option value="approved">✅ Aprovado para Entrevista</option>
+            <option value="rejected">❌ Recusado</option>
+          </select>
+        </div>
+
+        <div class="margin-bottom-16">
+          <label class="font-bold block margin-bottom-8">Parecer / Observações da Diretoria (Visível para o Jogador):</label>
+          <textarea rows="3" class="textarea-styled" x-model="appReviewerNotes" placeholder="Ex: Aprovado para entrevista no Discord dia 10/10 às 20h na sala de espera..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" @click="closeAppModal()">Fechar</button>
+        <button type="button" class="btn btn-gold" @click="saveApplicationReview()" :disabled="appActionLoading">
+          <span x-text="appActionLoading ? 'Salvando...' : 'Salvar Parecer'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Flutuante -->
+  <div class="toast show" x-show="toast.show" :class="toast.type === 'danger' ? 'toast-danger' : 'toast-success'" x-text="toast.message" role="status" aria-live="polite"></div>
+</body>
+</html>
