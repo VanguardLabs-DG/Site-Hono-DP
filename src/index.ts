@@ -5,6 +5,7 @@ import { rulesRoutes } from "./routes/rules";
 import { applicationsRoutes } from "./routes/applications";
 import { adminRoutes } from "./routes/admin";
 import { fivemRoutes } from "./routes/fivem";
+import { discordRoutes } from "./routes/discord";
 import type { Env } from "./env";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -47,6 +48,7 @@ app.route("/api/rules", rulesRoutes);
 app.route("/api/applications", applicationsRoutes);
 app.route("/api/admin", adminRoutes);
 app.route("/api/fivem-status", fivemRoutes);
+app.route("/api/discord-status", discordRoutes);
 
 // Fallback 404 para endpoints de API inexistentes
 app.all("/api/*", (c) => {

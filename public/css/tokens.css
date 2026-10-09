@@ -1,0 +1,98 @@
+/* ==========================================================================
+   DISTRITO PAULISTA RP — DESIGN TOKENS (ATOMIC FOUNDATION)
+   Padrão Ouro: vanguard_esc NUI — Luxury Cyberpunk Dark
+   ========================================================================== */
+
+:root {
+  /* 1. Base Darks (Camadas de Profundidade) */
+  --d900: #060608;
+  --d800: #0a0a0f;
+  --d700: #121218;
+  --d600: #181820;
+  --d500: #22222e;
+
+  /* Aliases Semânticos de Fundo */
+  --bg-deep: var(--d900);
+  --bg-card: rgba(10, 10, 16, 0.85);
+  --bg-card-hover: rgba(18, 18, 26, 0.95);
+  --bg-card-solid: var(--d700);
+  --bg-overlay: rgba(6, 6, 8, 0.88);
+
+  /* 2. Distrito Paulista Gold Identity */
+  --gold: #e5a93c;
+  --gold-l: #f5b945;
+  --gold-d: #b37e20;
+  --gold-vivid: var(--gold-l);
+  --gold-glow: rgba(229, 169, 60, 0.25);
+  --gold-glow-strong: rgba(229, 169, 60, 0.5);
+  --gold-subtle: rgba(229, 169, 60, 0.12);
+  --gold-border: rgba(229, 169, 60, 0.35);
+
+  /* 3. Tech Accents */
+  --cyan: #00e5ff;
+  --cyan-l: #38bdf8;
+  --cyan-glow: rgba(0, 229, 255, 0.25);
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.25);
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.25);
+  --purple: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.25);
+
+  /* Aliases de Status */
+  --success: var(--green);
+  --warning: var(--gold-l);
+  --danger: var(--red);
+  --info: var(--cyan);
+
+  /* 4. Glass Surface & Borders */
+  --glass: rgba(10, 10, 16, 0.85);
+  --glass-b: rgba(255, 255, 255, 0.08);
+  --glass-h: rgba(255, 255, 255, 0.04);
+  --border-line: var(--glass-b);
+  --border-line-hover: rgba(229, 169, 60, 0.45);
+
+  /* 5. Hierarquia de Texto */
+  --t1: #FFFFFF;
+  --t2: #d4d4d8;
+  --t3: #8a8a93;
+  --text-main: var(--t1);
+  --text-muted: var(--t2);
+  --text-subtle: var(--t3);
+
+  /* 6. Tipografia Oficial */
+  --font-main: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Rajdhani", "Sora", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* 7. Escala de Raios de Borda */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* 8. Escala de Espaçamento Modular (Rhythm 4/8px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* 9. Elevações & Sombras */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.75);
+  --shadow-gold: 0 0 25px var(--gold-glow);
+  --shadow-gold-strong: 0 0 35px var(--gold-glow-strong);
+
+  /* 10. Transições & Easing */
+  --transition-fast: 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}

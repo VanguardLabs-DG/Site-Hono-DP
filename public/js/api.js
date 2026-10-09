@@ -34,9 +34,10 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  // Saúde & FiveM
+  // Saúde, FiveM & Discord
   getHealth: () => request("/health"),
   getFiveMStatus: () => request("/fivem-status"),
+  getDiscordStatus: () => request("/discord-status"),
 
   // Autenticação & Sessão
   login: (email, password, turnstileToken = "") =>

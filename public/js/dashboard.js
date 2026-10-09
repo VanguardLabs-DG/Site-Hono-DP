@@ -43,7 +43,7 @@ function registerDashboardApp() {
       email: "",
       role: "suporte",
       password: "",
-      avatarUrl: "🎧",
+      avatarUrl: "fa-solid fa-headset",
     },
     createUserLoading: false,
     createUserError: "",
@@ -152,7 +152,7 @@ function registerDashboardApp() {
           displayName: `Staff ${role.toUpperCase()}`,
           email: `${role}@distritopaulista.com`,
           role,
-          avatarUrl: role === "ceo" ? "👑" : role === "diretor" ? "⚜️" : "🛡️",
+          avatarUrl: role === "ceo" ? "fa-solid fa-crown" : role === "diretor" ? "fa-solid fa-gem" : "fa-solid fa-shield-halved",
         };
 
         this.currentUser = target;
@@ -330,7 +330,7 @@ function registerDashboardApp() {
           email: "",
           role: "suporte",
           password: "",
-          avatarUrl: "🎧",
+          avatarUrl: "fa-solid fa-headset",
         };
         await this.loadTeam();
       } catch (err) {

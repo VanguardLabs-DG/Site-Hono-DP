@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portal de Recrutamento da Staff — Distrito Paulista RP. Candidate-se para Suporte, Moderador ou Administrador e consulte o status da sua inscrição." />
+  <meta name="theme-color" content="#060608" />
+  <title>Recrutamento & Status da Staff — Distrito Paulista RP</title>
+
+  <link rel="icon" type="image/png" href="./assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+
+  <script type="module" src="./js/portal.js"></script>
+</head>
+<body x-data="portalApp" :class="{ 'modal-open': staffLoginModalOpen }">
+  <a class="skip-link" href="#swup">Pular para o conteúdo principal</a>
+
+  <!-- Banner Superior Fixo -->
+  <div class="server-top-ticker" aria-label="Status do servidor FiveM">
+    <div class="container ticker-flex">
+      <div class="ticker-left">
+        <span class="status-indicator pulse" :class="fivemIsOnline ? 'online' : 'offline'" :title="fivemIsOnline ? 'Servidor Online' : 'Servidor Offline'"></span>
+        <strong class="ticker-server-name" x-text="fivemServerName || 'DISTRITO PAULISTA'">DISTRITO PAULISTA</strong>
+        <span class="ticker-badge-edition hide-mobile"><i class="fa-solid fa-code-branch"></i> SP v3.5</span>
+      </div>
+
+      <div class="ticker-right">
+        <!-- FiveM Players Pill -->
+        <div class="ticker-pill ticker-pill-fivem" title="Jogadores conectados agora no FiveM">
+          <i class="fa-solid fa-users"></i>
+          <span class="ticker-pill-val"><b x-text="fivemOnline">0</b>/<span x-text="fivemMaxClients">128</span></span>
+          <span class="ticker-pill-sub hide-mobile">Online</span>
+        </div>
+
+        <!-- Discord Pill -->
+        <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer" class="ticker-pill ticker-pill-discord" title="Comunidade Discord Oficial /drpd">
+          <i class="fa-brands fa-discord"></i>
+          <span class="ticker-pill-val"><b x-text="discordOnline">0</b></span>
+          <span class="ticker-pill-sub hide-mobile">no Discord</span>
+        </a>
+
+        <!-- Botão Copiar IP F8 -->
+        <button class="ticker-btn-ip" @click="copyIp()" title="Clique para copiar: connect distritopaulistarp.fivebr.gg">
+          <i :class="ipCopied ? 'fa-solid fa-check' : 'fa-solid fa-terminal'"></i>
+          <span class="ip-full hide-sm" x-text="ipCopied ? 'IP Copiado!' : 'distritopaulistarp.fivebr.gg'"></span>
+          <span class="ip-short show-sm" x-text="ipCopied ? 'Copiado!' : 'IP F8'"></span>
+        </button>
+
+        <!-- Botão Conectar Direto -->
+        <button class="ticker-btn-play hide-mobile" @click="connectDirectly()" title="Conectar diretamente via FiveM">
+          <i class="fa-solid fa-play"></i>
+          <span>Jogar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header de Navegação Fixo -->
+  <header class="site-header" id="topo">
+    <div class="container nav-wrap">
+      <a class="brand" href="./index.html" aria-label="Distrito Paulista - Início">
+        <img src="./assets/logo.png" alt="Distrito Paulista Logo" class="brand-logo" width="180" height="90" />
+      </a>
+
+      <button class="menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen" aria-controls="mainNav" aria-label="Abrir menu de navegação">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
+      <nav id="mainNav" class="main-nav" :class="{ 'active': mobileMenuOpen }" aria-label="Navegação principal">
+        <a href="./index.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-house" style="font-size: 0.85rem; margin-right: 4px;"></i> Início
+        </a>
+        <a href="./como-jogar.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-gamepad" style="font-size: 0.85rem; margin-right: 4px;"></i> Como Jogar
+        </a>
+        <a href="./regras.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-scale-balanced" style="font-size: 0.85rem; margin-right: 4px;"></i> Regras & Leis
+        </a>
+        <a href="./recrutamento.html" class="nav-link active" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-shield-halved" style="font-size: 0.85rem; margin-right: 4px;"></i> Recrutamento Staff
+        </a>
+        <a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer" class="nav-vip-link" title="Acesse a Loja VIP Oficial">
+          <i class="fa-solid fa-gem"></i>
+          <span>Loja VIP</span>
+        </a>
+
+        <div class="nav-auth-slot flex-align-center gap-8">
+          <template x-if="!isLoggedIn">
+            <button class="btn btn-glass btn-sm" @click="openLoginModal()" title="Acesso restrito para membros da Staff">
+              <i class="fa-solid fa-lock"></i>
+              <span>Login Staff</span>
+            </button>
+          </template>
+
+          <template x-if="isLoggedIn">
+            <a href="./dashboard" class="btn btn-gold btn-sm" title="Acessar Painel Administrativo">
+              <i class="fa-solid fa-user-shield"></i>
+              <span x-text="currentUser?.displayName || 'Painel Staff'"></span>
+            </a>
+          </template>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contêiner Swup -->
+  <main id="swup" class="transition-fade">
+    <section class="section">
+      <div class="container">
+        <div class="section-header-center">
+          <span class="section-tag"><i class="fa-solid fa-shield-halved"></i> CARREIRAS & PROCESSO SELETIVO</span>
+          <h2>Portal de Recrutamento & Gestão de Candidaturas</h2>
+          <p class="section-subtitle">
+            Participe do processo seletivo da administração do Distrito Paulista ou acompanhe o andamento da sua inscrição em tempo real.
+          </p>
+        </div>
+
+        <div class="two-col-layout" style="align-items: start;">
+          <!-- Coluna Esquerda: Requisitos e Pilares da Staff -->
+          <div>
+            <div class="card glass-card padding-28 margin-bottom-24">
+              <h3 style="font-size: 1.4rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-award" style="color: var(--gold-l);"></i>
+                <span>Pilares de um Membro da Staff</span>
+              </h3>
+              <p class="muted-text text-sm margin-bottom-20">
+                A Staff do Distrito Paulista é referência em organização e imparcialidade no cenário FiveM. Buscamos pessoas com postura ética, paciência e boa dicção.
+              </p>
+
+              <div class="pillar-card margin-bottom-12" style="padding: 16px;">
+                <div class="pillar-icon-box" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                  <i class="fa-solid fa-scale-balanced" style="color: var(--gold);"></i>
+                </div>
+                <div>
+                  <strong style="color: #fff; font-size: 0.95rem;">Imparcialidade Total</strong>
+                  <p class="muted-text text-xs margin-top-4">Decisões tomadas com base em provas e regras, sem favorecimento de amigos ou facções.</p>
+                </div>
+              </div>
+
+              <div class="pillar-card margin-bottom-12" style="padding: 16px;">
+                <div class="pillar-icon-box" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                  <i class="fa-solid fa-comments" style="color: var(--cyan);"></i>
+                </div>
+                <div>
+                  <strong style="color: #fff; font-size: 0.95rem;">Comunicação & Mediação</strong>
+                  <p class="muted-text text-xs margin-top-4">Capacidade de escutar ambas as partes em ocorrências tensas mantendo compostura e calma.</p>
+                </div>
+              </div>
+
+              <div class="pillar-card" style="padding: 16px;">
+                <div class="pillar-icon-box" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                  <i class="fa-solid fa-arrow-trend-up" style="color: var(--green);"></i>
+                </div>
+                <div>
+                  <strong style="color: #fff; font-size: 0.95rem;">Plano de Carreira Estruturado</strong>
+                  <p class="muted-text text-xs margin-top-4">Suporte ➔ Moderador ➔ Administrador ➔ Gerência com promoções baseadas em mérito e auditoria.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card glass-card padding-24">
+              <h4 style="font-size: 1.15rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-check" style="color: var(--green);"></i>
+                <span>Requisitos Mínimos:</span>
+              </h4>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; color: var(--t2);">
+                <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 6px;"></i> Idade mínima recomendada: <b>14 anos</b>.</li>
+                <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 6px;"></i> Microfone sem ruído ou eco.</li>
+                <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 6px;"></i> Disponibilidade mínima de <b>10 horas semanais</b>.</li>
+                <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 6px;"></i> Conhecimento sólido das regras da cidade.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Hub Interativo de Inscrição e Rastreamento -->
+          <div class="card glass-card padding-28">
+            <!-- Abas do Hub -->
+            <div class="modal-nav-tabs">
+              <button class="modal-nav-tab" :class="{ 'active': recruitTab === 'apply' }" @click="recruitTab = 'apply'">
+                <i class="fa-solid fa-clipboard-list" style="margin-right: 6px;"></i> Nova Inscrição
+              </button>
+              <button class="modal-nav-tab" :class="{ 'active': recruitTab === 'status' }" @click="recruitTab = 'status'">
+                <i class="fa-solid fa-magnifying-glass" style="margin-right: 6px;"></i> Consultar Andamento
+              </button>
+            </div>
+
+            <!-- ABA 1: FORMULÁRIO STEPPER WIZARD -->
+            <template x-if="recruitTab === 'apply'">
+              <div>
+                <!-- Stepper Progress Header -->
+                <div class="stepper-header">
+                  <div class="stepper-step" :class="{ 'active': recruitStep === 1, 'completed': recruitStep > 1 }">
+                    <div class="stepper-circle">1</div>
+                    <div class="stepper-label">Identificação</div>
+                  </div>
+                  <div class="stepper-step" :class="{ 'active': recruitStep === 2, 'completed': recruitStep > 2 }">
+                    <div class="stepper-circle">2</div>
+                    <div class="stepper-label">Disponibilidade</div>
+                  </div>
+                  <div class="stepper-step" :class="{ 'active': recruitStep === 3 }">
+                    <div class="stepper-circle">3</div>
+                    <div class="stepper-label">Cenários & Envio</div>
+                  </div>
+                </div>
+
+                <div class="stepper-progress-bar">
+                  <div class="stepper-progress-fill" :style="`width: ${recruitStep === 1 ? '33%' : recruitStep === 2 ? '66%' : '100%'};`"></div>
+                </div>
+
+                <form @submit.prevent="submitApplication()" novalidate>
+                  <!-- Passo 1 -->
+                  <div x-show="recruitStep === 1">
+                    <div class="form-grid-2">
+                      <div class="form-group">
+                        <label>Nome no Jogo / Personagem *</label>
+                        <input type="text" x-model="appForm.gameName" placeholder="Ex: Lucas Falcon (ID: 1042)" required />
+                      </div>
+                      <div class="form-group">
+                        <label>Discord Tag Oficial *</label>
+                        <input type="text" x-model="appForm.discordTag" placeholder="Ex: lucas_dp ou #1234" required />
+                      </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                      <div class="form-group">
+                        <label>Sua Idade *</label>
+                        <input type="number" x-model="appForm.age" min="13" max="99" placeholder="Ex: 19" required />
+                      </div>
+                      <div class="form-group">
+                        <label>Cargo Pretendido *</label>
+                        <select x-model="appForm.desiredRole" required>
+                          <option value="suporte">Suporte (Atendimento Inicial & Dúvidas)</option>
+                          <option value="moderador">Moderador (Mediação no Discord & Jogo)</option>
+                          <option value="administrador">Administrador (Gestão de Ocorrências)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Passo 2 -->
+                  <div x-show="recruitStep === 2">
+                    <div class="form-group">
+                      <label>Disponibilidade Semanal de Horários *</label>
+                      <input type="text" x-model="appForm.availability" placeholder="Ex: Segunda a Sexta das 19h às 00h; Finais de semana livre" required />
+                    </div>
+                    <div class="form-group">
+                      <label>Experiência Prévia em Roleplay ou Staff *</label>
+                      <textarea rows="4" x-model="appForm.experience" placeholder="Conte brevemente sobre servidores onde jogou, funções anteriores na Staff e seu tempo de FiveM..." required></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Passo 3 -->
+                  <div x-show="recruitStep === 3">
+                    <div class="form-group">
+                      <label>Cenário 1: Como agiria se um amigo íntimo cometesse uma infração grave de RP? *</label>
+                      <textarea rows="3" x-model="appForm.scenario1" placeholder="Demonstre sua imparcialidade perante as regras do servidor..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>Cenário 2: Como lidaria com um jogador alterado ou desrespeitoso em atendimento? *</label>
+                      <textarea rows="3" x-model="appForm.scenario2" placeholder="Explique como manter a calma, profissionalismo e aplicar as penalidades cabíveis..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>Por que deveríamos escolher você para a Staff? *</label>
+                      <textarea rows="3" x-model="appForm.motivation" placeholder="Seus diferenciais, compromisso com a comunidade e ética..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label class="checkbox-label flex-align-center gap-8">
+                        <input type="checkbox" x-model="appForm.acceptedRules" required />
+                        <span style="font-size: 0.88rem;">Li e concordo integralmente com as diretrizes e regras do Distrito Paulista RP.</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Alertas -->
+                  <template x-if="appSuccessMessage">
+                    <div class="alert alert-success margin-bottom-16" x-text="appSuccessMessage"></div>
+                  </template>
+                  <template x-if="appErrorMessage">
+                    <div class="alert alert-danger margin-bottom-16" x-text="appErrorMessage"></div>
+                  </template>
+
+                  <!-- Controles -->
+                  <div class="flex-between-center margin-top-20">
+                    <div>
+                      <button type="button" class="btn btn-glass" @click="prevStep()" x-show="recruitStep > 1">
+                        <i class="fa-solid fa-arrow-left"></i> Voltar
+                      </button>
+                    </div>
+                    <div>
+                      <button type="button" class="btn btn-gold" @click="nextStep()" x-show="recruitStep < 3">
+                        <span>Próximo Passo</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                      </button>
+                      <button type="submit" class="btn btn-gold btn-glow" x-show="recruitStep === 3" :disabled="appSubmitting">
+                        <i class="fa-solid fa-paper-plane" x-show="!appSubmitting"></i>
+                        <span x-text="appSubmitting ? 'Enviando Candidatura...' : 'Finalizar & Enviar Inscrição'"></span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </template>
+
+            <!-- ABA 2: RASTREADOR DE STATUS EM TIMELINE -->
+            <template x-if="recruitTab === 'status'">
+              <div>
+                <form class="lookup-form" @submit.prevent="checkStatus()" novalidate>
+                  <div class="lookup-input-group">
+                    <input type="text" x-model="statusSearchQuery" placeholder="Digite seu Discord Tag (ex: lucas_dp) ou Nome no jogo..." required autocomplete="off" />
+                    <button type="submit" class="btn btn-gold" :disabled="statusSearching">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <span x-text="statusSearching ? 'Buscando...' : 'Consultar'"></span>
+                    </button>
+                  </div>
+                </form>
+
+                <div class="timeline-tracker" x-show="statusSearched">
+                  <template x-if="statusSearchResults.length === 0">
+                    <div class="alert alert-warning text-center margin-top-20">
+                      Nenhuma inscrição encontrada com os dados informados. Verifique se digitou o Discord ou Nome cadastrado corretamente.
+                    </div>
+                  </template>
+
+                  <template x-for="item in statusSearchResults" :key="item.id">
+                    <div class="tracker-card">
+                      <div class="tracker-header-row">
+                        <div>
+                          <strong style="color: #fff; font-size: 1.15rem;" x-text="item.gameName"></strong>
+                          <span class="muted-text text-sm margin-left-8" x-text="`(${item.discordTag})`"></span>
+                        </div>
+                        <div class="flex-align-center gap-8">
+                          <span class="badge secondary capitalize" x-text="`Cargo: ${item.desiredRole}`"></span>
+                          <span class="badge" :class="getStatusBadge(item.status).class" x-text="getStatusBadge(item.status).label"></span>
+                        </div>
+                      </div>
+
+                      <!-- Timeline Gráfica -->
+                      <div class="tracker-stepper-visual">
+                        <div class="tracker-line-bar"></div>
+
+                        <!-- Nó 1 -->
+                        <div class="tracker-node" :class="{ 'done': true }">
+                          <div class="tracker-node-circle"><i class="fa-solid fa-check"></i></div>
+                          <span class="tracker-node-label">1. Recebido</span>
+                        </div>
+
+                        <!-- Nó 2 -->
+                        <div class="tracker-node" :class="{ 'done': item.status === 'reviewing' || item.status === 'approved' || item.status === 'rejected', 'current': item.status === 'pending' }">
+                          <div class="tracker-node-circle">2</div>
+                          <span class="tracker-node-label">2. Em Análise</span>
+                        </div>
+
+                        <!-- Nó 3 -->
+                        <div class="tracker-node" :class="{ 'done': item.status === 'approved', 'danger': item.status === 'rejected', 'current': item.status === 'reviewing' }">
+                          <div class="tracker-node-circle">
+                            <i :class="item.status === 'approved' ? 'fa-solid fa-check' : item.status === 'rejected' ? 'fa-solid fa-xmark' : ''" x-show="item.status === 'approved' || item.status === 'rejected'"></i>
+                            <span x-show="item.status !== 'approved' && item.status !== 'rejected'">3</span>
+                          </div>
+                          <span class="tracker-node-label">3. Parecer Final</span>
+                        </div>
+                      </div>
+
+                      <div class="tracker-notes-box">
+                        <strong>Parecer Oficial da Diretoria:</strong>
+                        <p x-text="item.reviewerNotes || 'Sua candidatura está em fila de espera para triagem. Fique atento às mensagens privadas no Discord.'"></p>
+                      </div>
+                      <small class="muted-text text-xs margin-top-8 block">
+                        Data de Envio: <span x-text="new Date(item.createdAt).toLocaleString('pt-BR')"></span>
+                      </small>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé Institucional Fixo -->
+  <footer class="site-footer">
+    <div class="container footer-content-wrap">
+      <div class="footer-col-brand">
+        <img src="./assets/logo.png" alt="Distrito Paulista" class="footer-logo" width="160" />
+        <p class="footer-desc">
+          O Distrito Paulista é um servidor de FiveM focado em roleplay imersivo de alta qualidade, respeito aos jogadores e estabilidade técnica de alto nível.
+        </p>
+      </div>
+
+      <div class="footer-col-links">
+        <strong>Páginas Oficiais</strong>
+        <ul>
+          <li><a href="./index.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Início</a></li>
+          <li><a href="./como-jogar.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Como Começar a Jogar</a></li>
+          <li><a href="./regras.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Regras & Código Penal SP</a></li>
+          <li><a href="./recrutamento.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Recrutamento & Status Staff</a></li>
+          <li><a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer" style="color: var(--gold-vivid); font-weight: 700;"><i class="fa-solid fa-gem"></i> Loja VIP Oficial</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-status">
+        <strong>Área da Staff & Gestão</strong>
+        <p class="footer-text-muted">Acesso restrito para membros da administração e diretoria.</p>
+        <div class="margin-top-12 flex-direction-column gap-8">
+          <a href="./recrutamento.html" class="btn btn-sm btn-outline-gold">
+            <i class="fa-solid fa-clipboard-user"></i>
+            <span>Candidatar-se à Staff</span>
+          </a>
+          <button class="btn btn-xs btn-glass margin-top-8" @click="openLoginModal()" style="opacity: 0.8;">
+            <i class="fa-solid fa-lock"></i>
+            <span>Login Administrativo Staff</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="container footer-bottom-flex">
+        <p>© 2026 Distrito Paulista RP. Todos os direitos reservados. Não afiliado à Take-Two Interactive ou Rockstar Games.</p>
+        <div class="footer-social-icons">
+          <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i> Discord (/drpd)</a> •
+          <a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-gem"></i> Loja VIP</a> •
+          <a href="#topo"><i class="fa-solid fa-arrow-up"></i> Topo</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de Login Staff -->
+  <div class="modal-backdrop" x-show="staffLoginModalOpen" x-cloak @click.self="staffLoginModalOpen = false">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="flex-align-center gap-10">
+          <i class="fa-solid fa-shield-halved" style="font-size: 1.4rem; color: var(--gold-l);"></i>
+          <div>
+            <h3>Área Administrativa Staff</h3>
+            <p class="muted-text text-xs">Acesso restrito para membros da administração do servidor.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" @click="staffLoginModalOpen = false" aria-label="Fechar modal">✕</button>
+      </div>
+
+      <div class="padding-28">
+        <div class="text-center margin-bottom-20">
+          <img src="./assets/logo.png" alt="Distrito Paulista" style="width: 110px;" />
+        </div>
+
+        <form @submit.prevent="handleLogin()" novalidate>
+          <div class="form-group">
+            <label for="modal-email-4">E-mail Institucional</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-envelope"></i>
+              <input id="modal-email-4" x-model="loginForm.email" type="email" autocomplete="username" placeholder="seu.cargo@distritopaulista.com" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="modal-password-4">Senha de Segurança</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-key"></i>
+              <input id="modal-password-4" x-model="loginForm.password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••••••" required />
+              <button type="button" class="toggle-password-btn" @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <template x-if="loginError">
+            <div class="alert alert-danger margin-bottom-12" x-text="loginError"></div>
+          </template>
+
+          <button class="btn btn-gold btn-full btn-lg margin-top-12" type="submit" :disabled="loginLoading">
+            <i class="fa-solid fa-right-to-bracket" x-show="!loginLoading"></i>
+            <span x-text="loginLoading ? 'Autenticando no Edge...' : 'Acessar Painel da Staff'"></span>
+          </button>
+        </form>
+
+        <div class="demo-drawer-box">
+          <button type="button" class="demo-drawer-toggle" @click="showDemoDrawer = !showDemoDrawer">
+            <span><i class="fa-solid fa-gear"></i> Ambiente Demo / Atalhos de Teste (6 Cargos)</span>
+            <span x-text="showDemoDrawer ? '▲ Ocultar' : '▼ Expandir'"></span>
+          </button>
+
+          <div x-show="showDemoDrawer" x-cloak class="margin-top-12">
+            <small class="muted-text block text-center margin-bottom-8">Clique em qualquer cargo para testar a sessão no painel:</small>
+            <div class="demo-buttons-grid-modal">
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('ceo')"><i class="fa-solid fa-crown"></i> CEO</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('diretor')"><i class="fa-solid fa-gem"></i> Diretor</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('gerente')"><i class="fa-solid fa-briefcase"></i> Gerente</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('administrador')"><i class="fa-solid fa-scale-balanced"></i> Admin</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('moderador')"><i class="fa-solid fa-shield-halved"></i> Moderador</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('suporte')"><i class="fa-solid fa-headset"></i> Suporte</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast show toast-success" x-show="toastVisible" x-cloak x-text="toastMessage" role="status" aria-live="polite"></div>
+</body>
+</html>

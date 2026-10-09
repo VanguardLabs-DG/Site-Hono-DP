@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manual de Regras & Código Penal Unificado do Distrito Paulista RP — Diretrizes de conduta, normas da polícia, crime e Calculadora Penal." />
+  <meta name="theme-color" content="#060608" />
+  <title>Regras & Código Penal SP — Distrito Paulista RP</title>
+
+  <link rel="icon" type="image/png" href="./assets/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+
+  <script type="module" src="./js/portal.js"></script>
+</head>
+<body x-data="portalApp" :class="{ 'modal-open': staffLoginModalOpen }">
+  <a class="skip-link" href="#swup">Pular para o conteúdo principal</a>
+
+  <!-- Banner Superior Fixo -->
+  <div class="server-top-ticker" aria-label="Status do servidor FiveM">
+    <div class="container ticker-flex">
+      <div class="ticker-left">
+        <span class="status-indicator pulse" :class="fivemIsOnline ? 'online' : 'offline'" :title="fivemIsOnline ? 'Servidor Online' : 'Servidor Offline'"></span>
+        <strong class="ticker-server-name" x-text="fivemServerName || 'DISTRITO PAULISTA'">DISTRITO PAULISTA</strong>
+        <span class="ticker-badge-edition hide-mobile"><i class="fa-solid fa-code-branch"></i> SP v3.5</span>
+      </div>
+
+      <div class="ticker-right">
+        <!-- FiveM Players Pill -->
+        <div class="ticker-pill ticker-pill-fivem" title="Jogadores conectados agora no FiveM">
+          <i class="fa-solid fa-users"></i>
+          <span class="ticker-pill-val"><b x-text="fivemOnline">0</b>/<span x-text="fivemMaxClients">128</span></span>
+          <span class="ticker-pill-sub hide-mobile">Online</span>
+        </div>
+
+        <!-- Discord Pill -->
+        <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer" class="ticker-pill ticker-pill-discord" title="Comunidade Discord Oficial /drpd">
+          <i class="fa-brands fa-discord"></i>
+          <span class="ticker-pill-val"><b x-text="discordOnline">0</b></span>
+          <span class="ticker-pill-sub hide-mobile">no Discord</span>
+        </a>
+
+        <!-- Botão Copiar IP F8 -->
+        <button class="ticker-btn-ip" @click="copyIp()" title="Clique para copiar: connect distritopaulistarp.fivebr.gg">
+          <i :class="ipCopied ? 'fa-solid fa-check' : 'fa-solid fa-terminal'"></i>
+          <span class="ip-full hide-sm" x-text="ipCopied ? 'IP Copiado!' : 'distritopaulistarp.fivebr.gg'"></span>
+          <span class="ip-short show-sm" x-text="ipCopied ? 'Copiado!' : 'IP F8'"></span>
+        </button>
+
+        <!-- Botão Conectar Direto -->
+        <button class="ticker-btn-play hide-mobile" @click="connectDirectly()" title="Conectar diretamente via FiveM">
+          <i class="fa-solid fa-play"></i>
+          <span>Jogar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header de Navegação Fixo -->
+  <header class="site-header" id="topo">
+    <div class="container nav-wrap">
+      <a class="brand" href="./index.html" aria-label="Distrito Paulista - Início">
+        <img src="./assets/logo.png" alt="Distrito Paulista Logo" class="brand-logo" width="180" height="90" />
+      </a>
+
+      <button class="menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen" aria-controls="mainNav" aria-label="Abrir menu de navegação">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
+      <nav id="mainNav" class="main-nav" :class="{ 'active': mobileMenuOpen }" aria-label="Navegação principal">
+        <a href="./index.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-house" style="font-size: 0.85rem; margin-right: 4px;"></i> Início
+        </a>
+        <a href="./como-jogar.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-gamepad" style="font-size: 0.85rem; margin-right: 4px;"></i> Como Jogar
+        </a>
+        <a href="./regras.html" class="nav-link active" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-scale-balanced" style="font-size: 0.85rem; margin-right: 4px;"></i> Regras & Leis
+        </a>
+        <a href="./recrutamento.html" class="nav-link" @click="mobileMenuOpen = false">
+          <i class="fa-solid fa-shield-halved" style="font-size: 0.85rem; margin-right: 4px;"></i> Recrutamento Staff
+        </a>
+        <a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer" class="nav-vip-link" title="Acesse a Loja VIP Oficial">
+          <i class="fa-solid fa-gem"></i>
+          <span>Loja VIP</span>
+        </a>
+
+        <div class="nav-auth-slot flex-align-center gap-8">
+          <template x-if="!isLoggedIn">
+            <button class="btn btn-glass btn-sm" @click="openLoginModal()" title="Acesso restrito para membros da Staff">
+              <i class="fa-solid fa-lock"></i>
+              <span>Login Staff</span>
+            </button>
+          </template>
+
+          <template x-if="isLoggedIn">
+            <a href="./dashboard" class="btn btn-gold btn-sm" title="Acessar Painel Administrativo">
+              <i class="fa-solid fa-user-shield"></i>
+              <span x-text="currentUser?.displayName || 'Painel Staff'"></span>
+            </a>
+          </template>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contêiner Swup -->
+  <main id="swup" class="transition-fade">
+    <section class="section section-rules" id="regras">
+      <div class="container container-wide">
+        <div class="section-header-center">
+          <span class="section-tag"><i class="fa-solid fa-gavel"></i> REGULAMENTO OFICIAL & CÓDIGO PENAL</span>
+          <h2>Regras da Cidade & Calculadora Penal</h2>
+          <p class="section-subtitle">
+            O desconhecimento das diretrizes não isenta nenhum cidadão de punição. O Roleplay valoriza a interpretação, respeito e bom senso.
+          </p>
+        </div>
+
+        <!-- Barra de Busca Instantânea -->
+        <div class="rules-search-bar">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" x-model="ruleSearchQuery" placeholder="Pesquisar regra ou artigo penal (ex: Homicídio, Roubo, RDM, VDM, Safezone, Abordagem)..." autocomplete="off" aria-label="Filtrar regras" />
+            <button class="clear-search-btn" x-show="ruleSearchQuery" @click="ruleSearchQuery = ''" aria-label="Limpar pesquisa">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Abas de Categorias -->
+        <div class="rules-tabs-container">
+          <div class="tabs" role="tablist" aria-label="Categorias de Regras">
+            <button class="tab-btn" :class="{ 'active': currentCategory === 'gerais' }" @click="currentCategory = 'gerais'" role="tab">
+              <i class="fa-solid fa-scale-balanced" style="color: var(--gold);"></i>
+              <span>Regras Gerais</span>
+              <span class="rule-count-pill" x-text="getRuleCount('gerais')">8</span>
+            </button>
+            <button class="tab-btn" :class="{ 'active': currentCategory === 'policia' }" @click="currentCategory = 'policia'" role="tab">
+              <i class="fa-solid fa-shield-halved" style="color: var(--cyan);"></i>
+              <span>Polícia & Forças</span>
+              <span class="rule-count-pill" x-text="getRuleCount('policia')">7</span>
+            </button>
+            <button class="tab-btn" :class="{ 'active': currentCategory === 'ilegal' }" @click="currentCategory = 'ilegal'" role="tab">
+              <i class="fa-solid fa-skull" style="color: var(--red);"></i>
+              <span>Crime & Ilegal</span>
+              <span class="rule-count-pill" x-text="getRuleCount('ilegal')">7</span>
+            </button>
+            <button class="tab-btn" :class="{ 'active': currentCategory === 'codigo_penal' }" @click="currentCategory = 'codigo_penal'" role="tab">
+              <i class="fa-solid fa-calculator" style="color: var(--gold-l);"></i>
+              <span>Código Penal SP & Calculadora</span>
+              <span class="rule-count-pill" x-text="penalCode.length">12</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Exibição 1: Regras Convencionais (Gerais, Polícia, Ilegal) -->
+        <template x-if="currentCategory !== 'codigo_penal'">
+          <div class="card glass-card rules-display-card" tabindex="0">
+            <div class="rules-category-header">
+              <div>
+                <h3 x-text="activeRule?.title"></h3>
+                <p style="color: var(--t2); font-size: 0.9rem; margin-top: 4px;" x-text="`Total de ${activeRuleLines.length} artigos normativos cadastrados.`"></p>
+              </div>
+              <button class="btn btn-glass" style="font-size: 0.85rem;" @click="copyAllCurrentCategory()">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copiar Todas as Regras Desta Categoria</span>
+              </button>
+            </div>
+
+            <div class="rules-list margin-top-20">
+              <template x-for="item in filteredRules" :key="item.number">
+                <div class="rule-item-box">
+                  <div class="rule-number" x-text="item.number"></div>
+                  <div class="rule-text" x-text="item.text"></div>
+                  <button class="rule-copy-btn" @click="copyRule(item.raw)" title="Copiar texto da regra" aria-label="Copiar regra">
+                    <i class="fa-regular fa-copy"></i>
+                  </button>
+                </div>
+              </template>
+              <template x-if="filteredRules.length === 0">
+                <div style="text-align: center; padding: 40px 0; color: var(--t3);">
+                  <p style="font-size: 1.1rem;">Nenhuma regra encontrada para o termo pesquisado.</p>
+                  <button class="btn btn-outline-gold" style="margin-top: 14px;" @click="ruleSearchQuery = ''">Limpar Pesquisa</button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- Exibição 2: Código Penal Estruturado com Calculadora Interativa -->
+        <template x-if="currentCategory === 'codigo_penal'">
+          <div class="penal-wrapper" id="calculadora">
+            <!-- Coluna Esquerda: Lista de Crimes e Artigos -->
+            <div>
+              <div class="penal-filters-row">
+                <button class="penal-filter-chip" :class="{ 'active': penalFilter === 'all' }" @click="penalFilter = 'all'">
+                  <i class="fa-solid fa-layer-group"></i> Todos os Crimes
+                </button>
+                <template x-for="cat in penalCategories" :key="cat">
+                  <button class="penal-filter-chip" :class="{ 'active': penalFilter === cat }" @click="penalFilter = cat" x-text="cat"></button>
+                </template>
+              </div>
+
+              <div class="penal-list-grid">
+                <template x-for="crime in filteredPenalCode" :key="crime.id">
+                  <div class="crime-card-vanguard" :class="{ 'is-selected': isCrimeSelected(crime.id) }" @click="togglePenalCrime(crime.id)">
+                    <!-- Topo do Card: Artigo, Categoria, Status de Fiança e Checkbox -->
+                    <div class="crime-card-top">
+                      <div class="crime-card-meta-tags">
+                        <span class="crime-article-badge" x-text="crime.article"></span>
+                        <span class="crime-category-pill" x-text="crime.category"></span>
+                      </div>
+                      <div class="crime-card-status-actions">
+                        <span :class="crime.bailable ? 'pill-bailable' : 'pill-unbailable'">
+                          <i :class="crime.bailable ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock'"></i>
+                          <span x-text="crime.bailable ? 'Afiançável' : 'Inafiançável'"></span>
+                        </span>
+                        <div class="crime-checkbox-custom" :class="{ 'checked': isCrimeSelected(crime.id) }">
+                          <i :class="isCrimeSelected(crime.id) ? 'fa-solid fa-square-check' : 'fa-regular fa-square'"></i>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Corpo do Card: Nome e Descrição/Qualificadora -->
+                    <div class="crime-card-main">
+                      <h4 class="crime-card-name" x-text="crime.name"></h4>
+                      <p class="crime-card-notes" x-text="crime.notes"></p>
+                    </div>
+
+                    <!-- Rodapé do Card: Estatísticas (Pena, Multa, Fiança) -->
+                    <div class="crime-card-footer">
+                      <div class="crime-stat-chip">
+                        <span class="chip-label">Pena</span>
+                        <span class="chip-val"><i class="fa-regular fa-clock" style="margin-right: 4px; font-size: 0.75rem;"></i><span x-text="`${crime.months} meses`"></span></span>
+                      </div>
+                      <div class="crime-stat-chip gold">
+                        <span class="chip-label">Multa</span>
+                        <span class="chip-val" x-text="`R$ ${crime.fine.toLocaleString('pt-BR')}`"></span>
+                      </div>
+                      <template x-if="crime.bailable && crime.bailAmount">
+                        <div class="crime-stat-chip green">
+                          <span class="chip-label">Fiança</span>
+                          <span class="chip-val" x-text="`R$ ${crime.bailAmount.toLocaleString('pt-BR')}`"></span>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+
+                <template x-if="filteredPenalCode.length === 0">
+                  <div class="card glass-card text-center padding-36">
+                    <p class="muted-text">Nenhum crime penal encontrado para a busca ou filtro selecionado.</p>
+                    <button class="btn btn-outline-gold" style="margin-top: 14px;" @click="penalFilter = 'all'; ruleSearchQuery = ''">Limpar Filtros</button>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Coluna Direita: Calculadora Penal Interativa Sticky (Dossiê Terminal MDT) -->
+            <div class="penal-calculator-sticky">
+              <!-- Cabeçalho do Terminal -->
+              <div class="calc-title">
+                <h4>
+                  <i class="fa-solid fa-scale-unbalanced-flip" style="color: var(--gold-l);"></i>
+                  <span>Dossiê Flagrante & Pena</span>
+                </h4>
+                <button class="btn btn-xs btn-glass" @click="clearPenalCalculator()" x-show="selectedPenalIds.length > 0" title="Limpar todos os artigos">
+                  <i class="fa-solid fa-arrow-rotate-left"></i> Limpar
+                </button>
+              </div>
+
+              <!-- Bandeja de Artigos Selecionados com Remoção Rápida -->
+              <div class="dossier-chips-tray" x-show="selectedPenalIds.length > 0">
+                <template x-for="crime in selectedCrimesObjects" :key="crime.id">
+                  <span class="dossier-chip" @click="removePenalCrime(crime.id)" :title="`Remover ${crime.article} - ${crime.name}`">
+                    <span x-text="crime.article"></span>
+                    <i class="fa-solid fa-xmark"></i>
+                  </span>
+                </template>
+              </div>
+
+              <div class="dossier-empty-hint" x-show="selectedPenalIds.length === 0">
+                <i class="fa-solid fa-arrow-pointer" style="color: var(--gold);"></i>
+                <span>Clique nos crimes ao lado para adicionar ao flagrante.</span>
+              </div>
+
+              <!-- Bloco de Destaque da Pena (Hero Metric com Barra de Progresso) -->
+              <div class="dossier-metric-hero">
+                <div class="dossier-metric-label">Tempo Total de Reclusão</div>
+                <div class="dossier-hero-number">
+                  <span x-text="calculatedTotalMonths"></span>
+                  <small>MESES</small>
+                </div>
+                <div class="dossier-progress-wrap">
+                  <div class="dossier-progress-bar" :class="{ 'at-cap': calculatedTotalMonths >= 120 }" :style="`width: ${Math.min((calculatedTotalMonths / 120) * 100, 100)}%`"></div>
+                </div>
+                <div class="dossier-cap-caption">
+                  <span>0m</span>
+                  <span x-show="calculatedTotalMonths >= 120" style="color: var(--gold-l); font-weight: 700;">Teto Máximo do RP Atingido</span>
+                  <span>Máx 120m (2h)</span>
+                </div>
+              </div>
+
+              <!-- Detalhamento Financeiro & Pena Base -->
+              <div class="dossier-row">
+                <span class="label">Crimes Imputados:</span>
+                <span class="val" x-text="`${selectedPenalIds.length} artigo(s)`"></span>
+              </div>
+
+              <div class="dossier-row" x-show="calculatedDiscountPercent > 0">
+                <span class="label">Pena Base (sem atenuante):</span>
+                <span class="val" style="color: var(--t2); font-size: 0.95rem; text-decoration: line-through;" x-text="`${calculatedBaseMonths} meses`"></span>
+              </div>
+
+              <div class="dossier-row" x-show="calculatedDiscountPercent > 0">
+                <span class="label" style="color: var(--cyan);">Desconto por Atenuantes:</span>
+                <span class="val" style="color: var(--cyan); font-size: 0.95rem;" x-text="`-${calculatedDiscountPercent}% (-${calculatedDiscountMonths}m)`"></span>
+              </div>
+
+              <div class="dossier-row">
+                <span class="label">Multa Processual Total:</span>
+                <span class="val" style="color: var(--gold-vivid);" x-text="`R$ ${calculatedTotalFine.toLocaleString('pt-BR')}`"></span>
+              </div>
+
+              <!-- Caixa de Status de Fiança -->
+              <div class="dossier-bail-box" :class="calculatedBailable ? 'is-bailable' : 'is-unbailable'">
+                <i class="bail-icon" :class="calculatedBailable ? 'fa-solid fa-lock-open' : 'fa-solid fa-ban'"></i>
+                <div class="bail-content">
+                  <strong x-text="calculatedBailable ? 'Flagrante Afiançável' : 'Flagrante Inafiançável'"></strong>
+                  <p x-show="calculatedBailable && calculatedBailAmount > 0" x-text="`Valor arbitrado da fiança: R$ ${calculatedBailAmount.toLocaleString('pt-BR')}`"></p>
+                  <p x-show="calculatedBailable && calculatedBailAmount === 0">Nenhum crime selecionado no momento.</p>
+                  <p x-show="!calculatedBailable" x-text="`Impedimento pelos artigos: ${unbailableReasons}`"></p>
+                </div>
+              </div>
+
+              <!-- Seção de Atenuantes Oficiais do Servidor -->
+              <div class="dossier-attenuators">
+                <div class="dossier-attenuators-header">Atenuantes Legais de Reclusão</div>
+                <label class="attenuator-item">
+                  <input type="checkbox" x-model="hasLawyer" />
+                  <span>Advogado Constituído Presente (-20%)</span>
+                </label>
+                <label class="attenuator-item">
+                  <input type="checkbox" x-model="isFirstOffense" />
+                  <span>Réu Primário / Confissão Espontânea (-30%)</span>
+                </label>
+              </div>
+
+              <!-- Campo de Passaporte / ID In-Game e Comandos -->
+              <div class="margin-top-12">
+                <label style="display: block; font-size: 0.75rem; color: var(--t3); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em;">
+                  Passaporte do Indiciado (Opcional p/ Comando)
+                </label>
+                <div class="dossier-id-input-group">
+                  <input type="text" x-model="inGamePlayerId" placeholder="Ex: 1042" maxlength="10" />
+                  <button class="btn btn-sm btn-glass" @click="copyInGameCommand()" :disabled="selectedPenalIds.length === 0" title="Copiar comando /prender para usar no chat do FiveM">
+                    <i class="fa-solid fa-terminal"></i> Copiar /prender
+                  </button>
+                </div>
+              </div>
+
+              <!-- Ação Principal: Copiar Laudo Oficial (Discord / Boletim) -->
+              <button class="btn btn-gold btn-full margin-top-10" @click="copyPenalReport()" :disabled="selectedPenalIds.length === 0">
+                <i class="fa-solid fa-file-contract"></i>
+                <span>Copiar Laudo do Flagrante (Discord)</span>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé Institucional Fixo -->
+  <footer class="site-footer">
+    <div class="container footer-content-wrap">
+      <div class="footer-col-brand">
+        <img src="./assets/logo.png" alt="Distrito Paulista" class="footer-logo" width="160" />
+        <p class="footer-desc">
+          O Distrito Paulista é um servidor de FiveM focado em roleplay imersivo de alta qualidade, respeito aos jogadores e estabilidade técnica de alto nível.
+        </p>
+      </div>
+
+      <div class="footer-col-links">
+        <strong>Páginas Oficiais</strong>
+        <ul>
+          <li><a href="./index.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Início</a></li>
+          <li><a href="./como-jogar.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Como Começar a Jogar</a></li>
+          <li><a href="./regras.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Regras & Código Penal SP</a></li>
+          <li><a href="./recrutamento.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold);"></i> Recrutamento & Status Staff</a></li>
+          <li><a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer" style="color: var(--gold-vivid); font-weight: 700;"><i class="fa-solid fa-gem"></i> Loja VIP Oficial</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-status">
+        <strong>Área da Staff & Gestão</strong>
+        <p class="footer-text-muted">Acesso restrito para membros da administração e diretoria.</p>
+        <div class="margin-top-12 flex-direction-column gap-8">
+          <a href="./recrutamento.html" class="btn btn-sm btn-outline-gold">
+            <i class="fa-solid fa-clipboard-user"></i>
+            <span>Candidatar-se à Staff</span>
+          </a>
+          <button class="btn btn-xs btn-glass margin-top-8" @click="openLoginModal()" style="opacity: 0.8;">
+            <i class="fa-solid fa-lock"></i>
+            <span>Login Administrativo Staff</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="container footer-bottom-flex">
+        <p>© 2026 Distrito Paulista RP. Todos os direitos reservados. Não afiliado à Take-Two Interactive ou Rockstar Games.</p>
+        <div class="footer-social-icons">
+          <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i> Discord (/drpd)</a> •
+          <a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-gem"></i> Loja VIP</a> •
+          <a href="#topo"><i class="fa-solid fa-arrow-up"></i> Topo</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de Login Staff -->
+  <div class="modal-backdrop" x-show="staffLoginModalOpen" x-cloak @click.self="staffLoginModalOpen = false">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="flex-align-center gap-10">
+          <i class="fa-solid fa-shield-halved" style="font-size: 1.4rem; color: var(--gold-l);"></i>
+          <div>
+            <h3>Área Administrativa Staff</h3>
+            <p class="muted-text text-xs">Acesso restrito para membros da administração do servidor.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" @click="staffLoginModalOpen = false" aria-label="Fechar modal">✕</button>
+      </div>
+
+      <div class="padding-28">
+        <div class="text-center margin-bottom-20">
+          <img src="./assets/logo.png" alt="Distrito Paulista" style="width: 110px;" />
+        </div>
+
+        <form @submit.prevent="handleLogin()" novalidate>
+          <div class="form-group">
+            <label for="modal-email-3">E-mail Institucional</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-envelope"></i>
+              <input id="modal-email-3" x-model="loginForm.email" type="email" autocomplete="username" placeholder="seu.cargo@distritopaulista.com" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="modal-password-3">Senha de Segurança</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-key"></i>
+              <input id="modal-password-3" x-model="loginForm.password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••••••" required />
+              <button type="button" class="toggle-password-btn" @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <template x-if="loginError">
+            <div class="alert alert-danger margin-bottom-12" x-text="loginError"></div>
+          </template>
+
+          <button class="btn btn-gold btn-full btn-lg margin-top-12" type="submit" :disabled="loginLoading">
+            <i class="fa-solid fa-right-to-bracket" x-show="!loginLoading"></i>
+            <span x-text="loginLoading ? 'Autenticando no Edge...' : 'Acessar Painel da Staff'"></span>
+          </button>
+        </form>
+
+        <div class="demo-drawer-box">
+          <button type="button" class="demo-drawer-toggle" @click="showDemoDrawer = !showDemoDrawer">
+            <span><i class="fa-solid fa-gear"></i> Ambiente Demo / Atalhos de Teste (6 Cargos)</span>
+            <span x-text="showDemoDrawer ? '▲ Ocultar' : '▼ Expandir'"></span>
+          </button>
+
+          <div x-show="showDemoDrawer" x-cloak class="margin-top-12">
+            <small class="muted-text block text-center margin-bottom-8">Clique em qualquer cargo para testar a sessão no painel:</small>
+            <div class="demo-buttons-grid-modal">
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('ceo')"><i class="fa-solid fa-crown"></i> CEO</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('diretor')"><i class="fa-solid fa-gem"></i> Diretor</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('gerente')"><i class="fa-solid fa-briefcase"></i> Gerente</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('administrador')"><i class="fa-solid fa-scale-balanced"></i> Admin</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('moderador')"><i class="fa-solid fa-shield-halved"></i> Moderador</button>
+              <button type="button" class="btn btn-xs btn-outline-gold" @click="handleDemoLogin('suporte')"><i class="fa-solid fa-headset"></i> Suporte</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast show toast-success" x-show="toastVisible" x-cloak x-text="toastMessage" role="status" aria-live="polite"></div>
+</body>
+</html>

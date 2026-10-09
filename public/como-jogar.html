@@ -3,30 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Distrito Paulista RP — Servidor FiveM oficial de São Paulo. Economia balanceada, corporações policiais de elite, código penal e recrutamento da staff." />
+  <meta name="description" content="Como Jogar no Distrito Paulista RP — Tutorial passo a passo de download do FiveM, sincronização no Discord e conexão com 1-clique." />
   <meta name="theme-color" content="#060608" />
-  <title>Distrito Paulista RP — Portal Oficial São Paulo FiveM</title>
+  <title>Como Começar a Jogar — Distrito Paulista RP</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="./assets/logo.png" />
-
-  <!-- Google Fonts: Sora, Rajdhani, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome 6 Pro/Free (Padrão Oficial vanguard_lib / vanguard_esc) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="./style.css" />
 
-  <!-- Core App & Swup Page Transitions -->
   <script type="module" src="./js/portal.js"></script>
 </head>
 <body x-data="portalApp" :class="{ 'modal-open': staffLoginModalOpen }">
   <a class="skip-link" href="#swup">Pular para o conteúdo principal</a>
 
-  <!-- Banner Superior Fixo de Status do Servidor -->
+  <!-- Banner Superior Fixo -->
   <div class="server-top-ticker" aria-label="Status do servidor FiveM">
     <div class="container ticker-flex">
       <div class="ticker-left">
@@ -80,10 +73,10 @@
       </button>
 
       <nav id="mainNav" class="main-nav" :class="{ 'active': mobileMenuOpen }" aria-label="Navegação principal">
-        <a href="./index.html" class="nav-link active" @click="mobileMenuOpen = false">
+        <a href="./index.html" class="nav-link" @click="mobileMenuOpen = false">
           <i class="fa-solid fa-house" style="font-size: 0.85rem; margin-right: 4px;"></i> Início
         </a>
-        <a href="./como-jogar.html" class="nav-link" @click="mobileMenuOpen = false">
+        <a href="./como-jogar.html" class="nav-link active" @click="mobileMenuOpen = false">
           <i class="fa-solid fa-gamepad" style="font-size: 0.85rem; margin-right: 4px;"></i> Como Jogar
         </a>
         <a href="./regras.html" class="nav-link" @click="mobileMenuOpen = false">
@@ -97,7 +90,6 @@
           <span>Loja VIP</span>
         </a>
 
-        <!-- Botões de Ação na Navbar -->
         <div class="nav-auth-slot flex-align-center gap-8">
           <template x-if="!isLoggedIn">
             <button class="btn btn-glass btn-sm" @click="openLoginModal()" title="Acesso restrito para membros da Staff">
@@ -117,174 +109,130 @@
     </div>
   </header>
 
-  <!-- Contêiner Swup: Transição de Página Suave -->
+  <!-- Contêiner Swup -->
   <main id="swup" class="transition-fade">
-    <!-- Hero Section Cinematográfica Limpa (Sem cards poluídos) -->
-    <section class="hero" id="home" aria-labelledby="heroTitle">
-      <div class="hero-backdrop" style="background-image: url('./assets/skyline_banner.jpg');"></div>
-      <div class="hero-overlay"></div>
-
-      <div class="container hero-content">
-        <div class="hero-brand-highlight">
-          <span class="eyebrow-badge">
-            <span class="glow-dot"></span> SÃO PAULO ROLEPLAY • CIDADE ABERTA • FIVEM BRASIL
-          </span>
-        </div>
-
-        <div class="hero-logo-center">
-          <img src="./assets/logo.png" alt="Distrito Paulista Roleplay" class="hero-main-logo" />
-        </div>
-
-        <h1 id="heroTitle" class="sr-only">Distrito Paulista RP — Servidor FiveM São Paulo</h1>
-        <p class="hero-subtext">
-          A maior experiência de interpretação urbana do Brasil. Uma metrópole com economia balanceada, corporações policiais estruturadas com fardamentos da PMESP/ROTA, submundo ativo e estabilidade de 60+ FPS no Cloudflare Edge.
-        </p>
-
-        <div class="hero-actions">
-          <button class="btn btn-gold btn-glow btn-lg" @click="connectDirectly()">
-            <i class="fa-solid fa-play"></i>
-            <span>Conectar Agora</span>
-          </button>
-          <a class="btn btn-glass btn-lg" href="./como-jogar.html">
-            <i class="fa-solid fa-book-open"></i>
-            <span>Guia de Entrada</span>
-          </a>
-          <a class="btn btn-vip-store" href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-gem"></i>
-            <span>Loja Oficial VIP</span>
-          </a>
-          <a class="btn btn-discord" href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-discord"></i>
-            <span>Discord Oficial (<span x-text="discordOnline ? `${discordOnline} online` : 'Entrar'"></span>)</span>
-          </a>
-        </div>
-
-        <!-- Faixa de Telemetria em Tempo Real (FiveM & Discord /drpd) -->
-        <div class="hero-telemetry-strip" aria-label="Telemetria em tempo real do servidor">
-          <div class="telemetry-item">
-            <span class="status-indicator pulse" :class="fivemIsOnline ? 'online' : 'offline'"></span>
-            <div class="telemetry-info">
-              <span class="telemetry-label">STATUS FIVEM</span>
-              <strong class="telemetry-val">
-                <span x-text="fivemOnline">0</span> / <span x-text="fivemMaxClients">128</span> <small>JOGADORES</small>
-              </strong>
-            </div>
-          </div>
-
-          <div class="telemetry-sep"></div>
-
-          <div class="telemetry-item">
-            <i class="fa-brands fa-discord" style="color: #5865F2; font-size: 1.3rem;"></i>
-            <div class="telemetry-info">
-              <span class="telemetry-label">DISCORD OFICIAL (/drpd)</span>
-              <strong class="telemetry-val">
-                <span x-text="discordOnline">0</span> <small>ONLINE</small> • <span x-text="discordMembers">0</span> <small>MEMBROS</small>
-              </strong>
-            </div>
-          </div>
-
-          <div class="telemetry-sep"></div>
-
-          <div class="telemetry-item copyable" @click="copyIp()" title="Clique para copiar comando do console F8">
-            <i class="fa-solid fa-terminal" style="color: var(--gold); font-size: 1.15rem;"></i>
-            <div class="telemetry-info">
-              <span class="telemetry-label">CONSOLE F8 (CLIQUE P/ COPIAR)</span>
-              <code class="telemetry-code" x-text="ipCopied ? 'Comando Copiado!' : 'connect distritopaulistarp.fivebr.gg'"></code>
-            </div>
-            <i class="fa-regular fa-copy telemetry-copy-icon"></i>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Banners Panorâmicos de Navegação (Padrão Ouro vanguard_esc) -->
-    <section class="section" style="padding-top: 20px;">
+    <section class="section">
       <div class="container">
         <div class="section-header-center">
-          <span class="section-tag">ACESSO RÁPIDO AO PORTAL</span>
-          <h2>Explore a Metrópole do Distrito Paulista</h2>
+          <span class="section-tag"><i class="fa-solid fa-compass"></i> GUIA DO CIDADÃO • ONBOARDING OFICIAL</span>
+          <h2>Como Começar a Jogar no Distrito Paulista</h2>
           <p class="section-subtitle">
-            Selecione uma das centrais oficiais abaixo para iniciar sua jornada, consultar o regulamento ou ingressar na administração.
+            Siga as 3 etapas abaixo para baixar os componentes, entrar no Discord e ingressar na cidade em poucos minutos.
           </p>
         </div>
 
-        <div class="portal-banners-grid">
-          <!-- Banner 1: Como Jogar (Ciano Tech) -->
-          <a href="./como-jogar.html" class="portal-banner-card portal-card-cyan">
-            <div class="portal-banner-top">
-              <div class="portal-banner-icon">
-                <i class="fa-solid fa-gamepad"></i>
+        <!-- 3 Cartões de Onboarding em Alta Resolução -->
+        <div class="onboarding-grid">
+          <!-- Passo 1 -->
+          <div class="step-card-ingress">
+            <span class="step-num-badge">01</span>
+            <div>
+              <div class="step-icon-large" style="color: var(--cyan);">
+                <i class="fa-solid fa-download"></i>
               </div>
-              <span class="portal-banner-tag">PASSO A PASSO</span>
+              <h4>Tenha o GTA V & Baixe o FiveM</h4>
+              <p>
+                É obrigatório possuir uma cópia original do GTA V instalada (Steam, Epic Games ou Rockstar Launcher). Em seguida, faça o download do cliente oficial do FiveM.
+              </p>
             </div>
-            <div class="portal-banner-body">
-              <h3>Guia de Entrada & Download</h3>
-              <p>Requisitos de sistema, download oficial do FiveM, sincronização no Discord e conexão direta em 1-clique pelo console F8.</p>
-            </div>
-            <div class="portal-banner-footer">
-              <span>Acessar Tutorial Completo</span>
-              <i class="fa-solid fa-arrow-right portal-banner-arrow"></i>
-            </div>
-          </a>
+            <a href="https://fivem.net/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-gold btn-sm">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>Baixar FiveM Oficial</span>
+            </a>
+          </div>
 
-          <!-- Banner 2: Regras & Leis (Ouro Paulista) -->
-          <a href="./regras.html" class="portal-banner-card portal-card-gold">
-            <div class="portal-banner-top">
-              <div class="portal-banner-icon">
-                <i class="fa-solid fa-scale-balanced"></i>
+          <!-- Passo 2 -->
+          <div class="step-card-ingress">
+            <span class="step-num-badge">02</span>
+            <div>
+              <div class="step-icon-large" style="color: #5865f2;">
+                <i class="fa-brands fa-discord"></i>
               </div>
-              <span class="portal-banner-tag">LEIS & REGULAMENTO</span>
+              <h4>Junte-se ao Discord Oficial</h4>
+              <p>
+                Entre na nossa comunidade para liberar o seu acesso, sincronizar sua conta, acompanhar comunicados oficiais, anúncios da prefeitura e falar com o suporte.
+              </p>
             </div>
-            <div class="portal-banner-body">
-              <h3>Regras da Cidade & Código Penal</h3>
-              <p>Diretrizes oficiais de conduta, conduta policial, regras do crime e a Calculadora Penal Interativa de penas e fianças.</p>
-            </div>
-            <div class="portal-banner-footer">
-              <span>Consultar Wiki de Leis</span>
-              <i class="fa-solid fa-arrow-right portal-banner-arrow"></i>
-            </div>
-          </a>
+            <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer" class="btn btn-discord btn-sm">
+              <i class="fa-brands fa-discord"></i>
+              <span>Entrar no Discord (<span x-text="discordMembers ? `${discordMembers} membros` : '/drpd'"></span>)</span>
+            </a>
+          </div>
 
-          <!-- Banner 3: Recrutamento Staff (Roxo Elite) -->
-          <a href="./recrutamento.html" class="portal-banner-card portal-card-purple">
-            <div class="portal-banner-top">
-              <div class="portal-banner-icon">
-                <i class="fa-solid fa-shield-halved"></i>
+          <!-- Passo 3 -->
+          <div class="step-card-ingress">
+            <span class="step-num-badge">03</span>
+            <div>
+              <div class="step-icon-large" style="color: var(--gold-l);">
+                <i class="fa-solid fa-bolt"></i>
               </div>
-              <span class="portal-banner-tag">CARREIRAS DA STAFF</span>
+              <h4>Conexão em 1-Clique</h4>
+              <p>
+                Abra o FiveM, aperte a tecla <strong>F8</strong> e cole o comando de conexão rápida, ou utilize o botão direto de abertura de protocolo abaixo.
+              </p>
             </div>
-            <div class="portal-banner-body">
-              <h3>Recrutamento & Acompanhamento</h3>
-              <p>Processo seletivo aberto para Suporte, Moderador e Administrador com rastreador visual de parecer da Diretoria.</p>
-            </div>
-            <div class="portal-banner-footer">
-              <span>Portal de Candidaturas</span>
-              <i class="fa-solid fa-arrow-right portal-banner-arrow"></i>
-            </div>
-          </a>
+            <button class="btn btn-gold btn-sm" @click="connectDirectly()">
+              <i class="fa-solid fa-play"></i>
+              <span>Conectar Diretamente</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Standout VIP Banner (Padrão vanguard_esc quick-card-vip) -->
-        <div class="standout-vip-banner flex-between-center flex-wrap gap-20">
-          <div style="max-width: 650px;">
-            <div class="flex-align-center gap-10 margin-bottom-8">
-              <i class="fa-solid fa-crown" style="font-size: 1.8rem; color: #ffd700;"></i>
-              <span class="badge-tag gold" style="font-size: 0.8rem;">CLUBE VIP EXCLUSIVO</span>
+        <!-- Terminal de Conexão Rápida F8 -->
+        <div class="card glass-card margin-top-36 padding-28 flex-between-center flex-wrap gap-20" style="border: 1px dashed var(--gold-border);">
+          <div class="flex-align-center gap-16">
+            <div style="font-size: 2.2rem; color: var(--gold);">
+              <i class="fa-solid fa-terminal"></i>
             </div>
-            <h3 style="font-size: 1.8rem; color: #fff; margin-bottom: 8px;">Apoie o Servidor & Garanta Vantagens Únicas</h3>
-            <p style="color: var(--t2); font-size: 0.95rem; line-height: 1.6;">
-              Adquira veículos importados com handling calibrado, skins customizadas de São Paulo, prioridade máxima na fila e cosméticos nobres. Sem mecânicas pay-to-win.
-            </p>
+            <div>
+              <strong style="color: #fff; font-size: 1.15rem; display: block;">Comando de Conexão Direta no Console (F8):</strong>
+              <p class="muted-text text-sm margin-top-4">Abra o FiveM no seu computador, pressione a tecla F8 e execute o comando:</p>
+              <code style="background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: var(--radius-xs); color: var(--gold-l); font-family: var(--font-mono); font-size: 1rem; display: inline-block; margin-top: 8px; border: 1px solid rgba(229, 169, 60, 0.3);">connect distritopaulistarp.fivebr.gg</code>
+            </div>
           </div>
-          <div class="flex-align-center gap-12 flex-wrap">
-            <a href="https://distritopaulista.centralcart.ai/" target="_blank" rel="noopener noreferrer" class="btn btn-gold btn-lg btn-glow">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span>Acessar Loja VIP Oficial</span>
-            </a>
-            <a href="https://discord.gg/drpd" target="_blank" rel="noopener noreferrer" class="btn btn-discord btn-lg">
-              <i class="fa-brands fa-discord"></i>
-              <span>Discord (<span x-text="discordMembers ? `${discordMembers.toLocaleString('pt-BR')} Membros` : '/drpd'"></span>)</span>
-            </a>
+          <button class="btn btn-gold btn-lg" @click="copyIp()">
+            <i class="fa-regular fa-copy"></i>
+            <span x-text="ipCopied ? 'Comando Copiado!' : 'Copiar Comando F8'"></span>
+          </button>
+        </div>
+
+        <!-- Requisitos Recomendados -->
+        <div class="margin-top-36">
+          <div class="card glass-card padding-28">
+            <h4 style="margin-bottom: 16px; font-size: 1.25rem;">
+              <i class="fa-solid fa-microchip" style="color: var(--cyan); margin-right: 8px;"></i>
+              Requisitos Recomendados para Rodar a 60+ FPS
+            </h4>
+            <div class="metrics-grid">
+              <div class="metric-card gold-border">
+                <div class="metric-icon"><i class="fa-solid fa-computer"></i></div>
+                <div class="metric-data">
+                  <span class="metric-label">Processador</span>
+                  <strong class="metric-value" style="font-size: 1.1rem;">Intel i5 / Ryzen 5+</strong>
+                </div>
+              </div>
+              <div class="metric-card success-border">
+                <div class="metric-icon"><i class="fa-solid fa-memory"></i></div>
+                <div class="metric-data">
+                  <span class="metric-label">Memória RAM</span>
+                  <strong class="metric-value" style="font-size: 1.1rem;">16 GB DDR4</strong>
+                </div>
+              </div>
+              <div class="metric-card warning-border">
+                <div class="metric-icon"><i class="fa-solid fa-hard-drive"></i></div>
+                <div class="metric-data">
+                  <span class="metric-label">Armazenamento</span>
+                  <strong class="metric-value" style="font-size: 1.1rem;">SSD NVMe / SATA</strong>
+                </div>
+              </div>
+              <div class="metric-card gold-border">
+                <div class="metric-icon"><i class="fa-solid fa-headset"></i></div>
+                <div class="metric-data">
+                  <span class="metric-label">Comunicação</span>
+                  <strong class="metric-value" style="font-size: 1.1rem;">Microfone Limpo</strong>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -299,11 +247,6 @@
         <p class="footer-desc">
           O Distrito Paulista é um servidor de FiveM focado em roleplay imersivo de alta qualidade, respeito aos jogadores e estabilidade técnica de alto nível.
         </p>
-        <div class="footer-badges">
-          <span class="footer-pill"><i class="fa-solid fa-shield"></i> Anti-Cheat Ativo</span>
-          <span class="footer-pill"><i class="fa-solid fa-bolt"></i> Cloudflare Edge</span>
-          <span class="footer-pill"><i class="fa-solid fa-scale-balanced"></i> Economia Realista</span>
-        </div>
       </div>
 
       <div class="footer-col-links">
@@ -345,7 +288,7 @@
     </div>
   </footer>
 
-  <!-- Modal de Login da Staff Seguro (Shared across all pages) -->
+  <!-- Modal de Login Staff -->
   <div class="modal-backdrop" x-show="staffLoginModalOpen" x-cloak @click.self="staffLoginModalOpen = false">
     <div class="modal-box">
       <div class="modal-header">
@@ -366,18 +309,18 @@
 
         <form @submit.prevent="handleLogin()" novalidate>
           <div class="form-group">
-            <label for="modal-email">E-mail Institucional</label>
+            <label for="modal-email-2">E-mail Institucional</label>
             <div class="input-with-icon">
               <i class="fa-solid fa-envelope"></i>
-              <input id="modal-email" x-model="loginForm.email" type="email" autocomplete="username" placeholder="seu.cargo@distritopaulista.com" required />
+              <input id="modal-email-2" x-model="loginForm.email" type="email" autocomplete="username" placeholder="seu.cargo@distritopaulista.com" required />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="modal-password">Senha de Segurança</label>
+            <label for="modal-password-2">Senha de Segurança</label>
             <div class="input-with-icon">
               <i class="fa-solid fa-key"></i>
-              <input id="modal-password" x-model="loginForm.password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••••••" required />
+              <input id="modal-password-2" x-model="loginForm.password" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="••••••••••••" required />
               <button type="button" class="toggle-password-btn" @click="showPassword = !showPassword">
                 <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
               </button>
@@ -394,7 +337,6 @@
           </button>
         </form>
 
-        <!-- Gaveta Retrátil de Testes em Modo Demonstração -->
         <div class="demo-drawer-box">
           <button type="button" class="demo-drawer-toggle" @click="showDemoDrawer = !showDemoDrawer">
             <span><i class="fa-solid fa-gear"></i> Ambiente Demo / Atalhos de Teste (6 Cargos)</span>
@@ -417,7 +359,6 @@
     </div>
   </div>
 
-  <!-- Toast Flutuante -->
   <div class="toast show toast-success" x-show="toastVisible" x-cloak x-text="toastMessage" role="status" aria-live="polite"></div>
 </body>
 </html>

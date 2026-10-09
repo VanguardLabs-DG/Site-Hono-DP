@@ -69,6 +69,161 @@ export const DEFAULT_RULES = {
   }
 };
 
+export const STRUCTURED_PENAL_CODE = [
+  {
+    id: "art-121",
+    article: "Art. 121",
+    name: "Homicídio Doloso",
+    category: "Crimes contra a Vida",
+    months: 50,
+    minMonths: 40,
+    maxMonths: 60,
+    fine: 50000,
+    bailable: false,
+    notes: "Pena máxima inafiançável com apreensão de armas utilizadas."
+  },
+  {
+    id: "art-121-1",
+    article: "Art. 121 § 1º",
+    name: "Tentativa de Homicídio",
+    category: "Crimes contra a Vida",
+    months: 30,
+    minMonths: 25,
+    maxMonths: 35,
+    fine: 30000,
+    bailable: false,
+    notes: "Ação deliberada com disparo ou agressão letal sem êxito."
+  },
+  {
+    id: "art-129",
+    article: "Art. 129",
+    name: "Lesão Corporal Grave",
+    category: "Crimes contra a Pessoa",
+    months: 18,
+    minMonths: 15,
+    maxMonths: 20,
+    fine: 15000,
+    bailable: true,
+    bailAmount: 30000,
+    notes: "Ofensa à integridade física necessitando de atendimento SAMU."
+  },
+  {
+    id: "art-155",
+    article: "Art. 155",
+    name: "Furto Simples e Qualificado",
+    category: "Crimes Patrimoniais",
+    months: 15,
+    minMonths: 10,
+    maxMonths: 20,
+    fine: 20000,
+    bailable: true,
+    bailAmount: 35000,
+    notes: "Subtração de bens sem violência física ou ameaça armada."
+  },
+  {
+    id: "art-157",
+    article: "Art. 157",
+    name: "Roubo / Assalto à Mão Armada",
+    category: "Crimes Patrimoniais",
+    months: 35,
+    minMonths: 25,
+    maxMonths: 45,
+    fine: 35000,
+    bailable: false,
+    notes: "Assalto a comércio, pedestre ou veículo mediante ameaça grave."
+  },
+  {
+    id: "art-148",
+    article: "Art. 148",
+    name: "Sequestro e Cárcere Privado",
+    category: "Crimes contra a Liberdade",
+    months: 40,
+    minMonths: 35,
+    maxMonths: 50,
+    fine: 40000,
+    bailable: false,
+    notes: "Retenção involuntária de civis ou policiais como reféns."
+  },
+  {
+    id: "art-33",
+    article: "Art. 33",
+    name: "Tráfico de Drogas e Entorpecentes",
+    category: "Saúde Pública",
+    months: 40,
+    minMonths: 30,
+    maxMonths: 50,
+    fine: 40000,
+    bailable: false,
+    notes: "Posse de substâncias ilícitas acima do teto de consumo pessoal."
+  },
+  {
+    id: "art-14-16",
+    article: "Art. 14/16",
+    name: "Porte Ilegal de Arma de Fogo",
+    category: "Armamento & Munição",
+    months: 25,
+    minMonths: 20,
+    maxMonths: 35,
+    fine: 25000,
+    bailable: true,
+    bailAmount: 50000,
+    notes: "Porte de arma sem registro civil ou armamento de uso restrito."
+  },
+  {
+    id: "art-329",
+    article: "Art. 329",
+    name: "Resistência à Prisão e Fuga",
+    category: "Administração Pública",
+    months: 20,
+    minMonths: 15,
+    maxMonths: 25,
+    fine: 20000,
+    bailable: true,
+    bailAmount: 35000,
+    notes: "Não acatamento de ordem de parada ou fuga em perseguição."
+  },
+  {
+    id: "art-331",
+    article: "Art. 331",
+    name: "Desacato a Autoridade",
+    category: "Administração Pública",
+    months: 15,
+    minMonths: 10,
+    maxMonths: 20,
+    fine: 15000,
+    bailable: true,
+    bailAmount: 25000,
+    notes: "Ofensa, desrespeito ou agressão verbal a policial ou servidor público."
+  },
+  {
+    id: "art-333",
+    article: "Art. 333",
+    name: "Corrupção Ativa / Suborno",
+    category: "Administração Pública",
+    months: 25,
+    minMonths: 20,
+    maxMonths: 30,
+    fine: 30000,
+    bailable: false,
+    notes: "Oferta de dinheiro ou favores para livrar-se de prisão."
+  },
+  {
+    id: "art-308",
+    article: "Art. 308",
+    name: "Racha / Direção Perigosa",
+    category: "Crimes de Trânsito",
+    months: 12,
+    minMonths: 10,
+    maxMonths: 15,
+    fine: 15000,
+    bailable: true,
+    bailAmount: 25000,
+    notes: "Disputa de corrida ilegal ou manobras que coloquem pedestres em risco."
+  }
+];
+
+
+
 export const DEFAULT_PERMISSIONS = [
   {
     permissionKey: "can_view_applications",
@@ -153,10 +308,10 @@ export const DEFAULT_PERMISSIONS = [
 ];
 
 export const DEMO_USERS = {
-  ceo: { id: "usr-ceo-01", displayName: "CEO Arthur", email: "ceo@distritopaulista.com", role: "ceo", avatarUrl: "👑" },
-  diretor: { id: "usr-dir-02", displayName: "Diretor Marcos", email: "diretor@distritopaulista.com", role: "diretor", avatarUrl: "⚜️" },
-  gerente: { id: "usr-ger-03", displayName: "Gerente Bruno", email: "gerente@distritopaulista.com", role: "gerente", avatarUrl: "💼" },
-  administrador: { id: "usr-adm-04", displayName: "Admin Rafael", email: "admin@distritopaulista.com", role: "administrador", avatarUrl: "⚖️" },
-  moderador: { id: "usr-mod-05", displayName: "Moderador Thiago", email: "moderador@distritopaulista.com", role: "moderador", avatarUrl: "🛡️" },
-  suporte: { id: "usr-sup-06", displayName: "Suporte Lucas", email: "suporte@distritopaulista.com", role: "suporte", avatarUrl: "🎧" }
+  ceo: { id: "usr-ceo-01", displayName: "CEO Arthur", email: "ceo@distritopaulista.com", role: "ceo", avatarUrl: "fa-solid fa-crown" },
+  diretor: { id: "usr-dir-02", displayName: "Diretor Marcos", email: "diretor@distritopaulista.com", role: "diretor", avatarUrl: "fa-solid fa-gem" },
+  gerente: { id: "usr-ger-03", displayName: "Gerente Bruno", email: "gerente@distritopaulista.com", role: "gerente", avatarUrl: "fa-solid fa-briefcase" },
+  administrador: { id: "usr-adm-04", displayName: "Admin Rafael", email: "admin@distritopaulista.com", role: "administrador", avatarUrl: "fa-solid fa-scale-balanced" },
+  moderador: { id: "usr-mod-05", displayName: "Moderador Thiago", email: "moderador@distritopaulista.com", role: "moderador", avatarUrl: "fa-solid fa-shield-halved" },
+  suporte: { id: "usr-sup-06", displayName: "Suporte Lucas", email: "suporte@distritopaulista.com", role: "suporte", avatarUrl: "fa-solid fa-headset" }
 };

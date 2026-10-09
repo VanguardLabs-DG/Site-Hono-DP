@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" href="./assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 
   <script type="module" src="./js/dashboard.js"></script>
@@ -31,17 +31,19 @@
     <!-- Seletor Rápido de Cargo (Modo Demonstração) -->
     <div class="demo-role-switcher-header">
       <span class="muted-text text-sm">Trocar Perfil:</span>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'ceo' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('ceo')">👑 CEO</button>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'diretor' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('diretor')">⚜️ Diretor</button>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'gerente' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('gerente')">💼 Gerente</button>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'administrador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('administrador')">⚖️ Admin</button>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'moderador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('moderador')">🛡️ Moderador</button>
-      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'suporte' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('suporte')">🎧 Suporte</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'ceo' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('ceo')"><i class="fa-solid fa-crown"></i> CEO</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'diretor' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('diretor')"><i class="fa-solid fa-gem"></i> Diretor</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'gerente' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('gerente')"><i class="fa-solid fa-briefcase"></i> Gerente</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'administrador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('administrador')"><i class="fa-solid fa-scale-balanced"></i> Admin</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'moderador' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('moderador')"><i class="fa-solid fa-shield-halved"></i> Moderador</button>
+      <button type="button" class="btn btn-xs" :class="currentUser?.role === 'suporte' ? 'btn-gold' : 'btn-glass'" @click="handleRoleSwitch('suporte')"><i class="fa-solid fa-headset"></i> Suporte</button>
     </div>
 
     <div class="dash-header-right">
       <div class="dash-user-pill">
-        <div class="dash-user-avatar" x-text="currentUser?.avatarUrl || '👑'"></div>
+        <div class="dash-user-avatar">
+          <i :class="currentUser?.avatarUrl || 'fa-solid fa-crown'"></i>
+        </div>
         <div class="dash-user-text">
           <strong x-text="currentUser?.displayName || 'Carregando...'"></strong>
           <span class="user-role-badge ceo-badge uppercase" x-text="currentUser?.role"></span>
@@ -122,28 +124,28 @@
 
         <div class="metrics-grid">
           <div class="metric-card gold-border">
-            <div class="metric-icon">📥</div>
+            <div class="metric-icon"><i class="fa-solid fa-inbox"></i></div>
             <div class="metric-data">
               <span class="metric-label">Total de Candidaturas</span>
               <strong class="metric-value" x-text="stats.totalApps">0</strong>
             </div>
           </div>
           <div class="metric-card warning-border">
-            <div class="metric-icon">⏳</div>
+            <div class="metric-icon"><i class="fa-solid fa-hourglass-half"></i></div>
             <div class="metric-data">
               <span class="metric-label">Aguardando Avaliação</span>
               <strong class="metric-value text-warning" x-text="stats.pendingApps">0</strong>
             </div>
           </div>
           <div class="metric-card success-border">
-            <div class="metric-icon">✅</div>
+            <div class="metric-icon"><i class="fa-solid fa-circle-check"></i></div>
             <div class="metric-data">
               <span class="metric-label">Aprovados para Entrevista</span>
               <strong class="metric-value text-success" x-text="stats.approvedApps">0</strong>
             </div>
           </div>
           <div class="metric-card danger-border">
-            <div class="metric-icon">👥</div>
+            <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
             <div class="metric-data">
               <span class="metric-label">Membros na Equipe</span>
               <strong class="metric-value text-danger" x-text="stats.staffCount">0</strong>
@@ -154,24 +156,24 @@
         <div class="dashboard-split-grid">
           <div class="card glass-card">
             <div class="card-header-styled">
-              <h4>⚡ Ações Rápidas de Gestão</h4>
+              <h4><i class="fa-solid fa-bolt" style="color: var(--gold); margin-right: 6px;"></i> Ações Rápidas de Gestão</h4>
             </div>
             <div class="quick-action-buttons">
               <button class="btn btn-glass" @click="activeTab = 'applications'">
-                <span>📋 Avaliar Novas Candidaturas</span>
+                <span><i class="fa-solid fa-clipboard-check"></i> Avaliar Novas Candidaturas</span>
               </button>
               <button class="btn btn-glass" @click="activeTab = 'contentEditor'">
-                <span>📜 Atualizar Código Penal ou Regras</span>
+                <span><i class="fa-solid fa-book"></i> Atualizar Código Penal ou Regras</span>
               </button>
               <button class="btn btn-gold" @click="isCreateUserModalOpen = true" x-show="can('can_manage_staff')">
-                <span>➕ Criar Novo Login de Staff</span>
+                <span><i class="fa-solid fa-user-plus"></i> Criar Novo Login de Staff</span>
               </button>
             </div>
           </div>
 
           <div class="card glass-card">
             <div class="card-header-styled">
-              <h4>🛡️ Privilégios do Cargo Atual</h4>
+              <h4><i class="fa-solid fa-shield-halved" style="color: var(--cyan); margin-right: 6px;"></i> Privilégios do Cargo Atual</h4>
             </div>
             <div class="user-rights-summary">
               <p><strong>Cargo Atual:</strong> <span class="capitalize" x-text="currentUser?.role"></span></p>
@@ -250,11 +252,11 @@
             </div>
             <div class="select-wrapper">
               <select class="select-styled" x-model="selectedRuleCategory" @change="selectRuleCategory(selectedRuleCategory)">
-                <option value="gerais">⚖️ Regras Gerais da Cidade</option>
-                <option value="policia">🚓 Regras da Polícia & Forças da Lei</option>
-                <option value="ilegal">💀 Regras do Ilegal & Facções</option>
-                <option value="codigo_penal">📜 Código Penal Oficial de SP</option>
-                <option value="historia">🌆 História & Lore da Cidade</option>
+                <option value="gerais">Regras Gerais da Cidade</option>
+                <option value="policia">Regras da Polícia & Forças da Lei</option>
+                <option value="ilegal">Regras do Ilegal & Facções</option>
+                <option value="codigo_penal">Código Penal Oficial de SP</option>
+                <option value="historia">História & Lore da Cidade</option>
               </select>
             </div>
           </div>
@@ -311,7 +313,7 @@
                 <template x-for="user in teamList" :key="user.id">
                   <tr>
                     <td>
-                      <span x-text="user.avatarUrl || '👤'"></span>
+                      <i :class="user.avatarUrl || 'fa-solid fa-user'" style="margin-right: 6px; color: var(--gold);"></i>
                       <strong x-text="user.displayName"></strong>
                     </td>
                     <td x-text="user.email"></td>
@@ -353,7 +355,7 @@
           <div class="pane-header-flex">
             <div>
               <div class="flex-align-center gap-8">
-                <span class="role-pill ceo">👑 EXCLUSIVO DO CEO MASTER</span>
+                <span class="role-pill ceo"><i class="fa-solid fa-crown"></i> EXCLUSIVO DO CEO MASTER</span>
               </div>
               <h3 class="margin-top-8">Matriz de Permissões de Cargos (RBAC)</h3>
               <p class="muted-text">Defina com precisão quais privilégios cada nível hierárquico possui na gestão do Distrito Paulista.</p>
@@ -365,12 +367,12 @@
               <thead>
                 <tr>
                   <th>Funcionalidade / Ação</th>
-                  <th class="text-center">Suporte 🎧</th>
-                  <th class="text-center">Moderador 🛡️</th>
-                  <th class="text-center">Administrador ⚖️</th>
-                  <th class="text-center">Gerente 💼</th>
-                  <th class="text-center">Diretor ⚜️</th>
-                  <th class="text-center">CEO 👑</th>
+                  <th class="text-center">Suporte</th>
+                  <th class="text-center">Moderador</th>
+                  <th class="text-center">Administrador</th>
+                  <th class="text-center">Gerente</th>
+                  <th class="text-center">Diretor</th>
+                  <th class="text-center">CEO</th>
                 </tr>
               </thead>
               <tbody>
@@ -468,12 +470,12 @@
         <div class="form-group">
           <label>Cargo Inicial *</label>
           <select x-model="newUserForm.role" required>
-            <option value="suporte">🎧 Suporte</option>
-            <option value="moderador">🛡️ Moderador</option>
-            <option value="administrador">⚖️ Administrador</option>
-            <option value="gerente">💼 Gerente</option>
-            <option value="diretor">⚜️ Diretor</option>
-            <option value="ceo" x-show="currentUser?.role === 'ceo'">👑 CEO (Superadmin)</option>
+            <option value="suporte">Suporte</option>
+            <option value="moderador">Moderador</option>
+            <option value="administrador">Administrador</option>
+            <option value="gerente">Gerente</option>
+            <option value="diretor">Diretor</option>
+            <option value="ceo" x-show="currentUser?.role === 'ceo'">CEO (Superadmin)</option>
           </select>
         </div>
 
@@ -548,10 +550,10 @@
         <div class="margin-bottom-16">
           <label class="font-bold block margin-bottom-8">Novo Status da Candidatura:</label>
           <select class="select-styled" x-model="appEditStatus">
-            <option value="pending">⏳ Pendente</option>
-            <option value="reviewing">🔍 Em Análise</option>
-            <option value="approved">✅ Aprovado para Entrevista</option>
-            <option value="rejected">❌ Recusado</option>
+            <option value="pending">Pendente</option>
+            <option value="reviewing">Em Análise</option>
+            <option value="approved">Aprovado para Entrevista</option>
+            <option value="rejected">Recusado</option>
           </select>
         </div>
 
